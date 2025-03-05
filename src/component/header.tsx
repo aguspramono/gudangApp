@@ -1,19 +1,21 @@
 import {
-  Button,
   Container,
-  Form,
   Nav,
   Navbar,
   NavDropdown,
   Offcanvas,
 } from "react-bootstrap";
+import { FaAngleRight, FaArtstation } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 function Header() {
   return (
-    <>
-      <Navbar expand="sm" className="bg-body-tertiary mb-3">
+    <div>
+      <Navbar expand="sm" className="bg-white shadow mb-3">
         <Container fluid>
-          <Navbar.Brand href="#">GDG</Navbar.Brand>
+          <Navbar.Brand href="#">
+            <FaArtstation /> <span style={{ fontWeight: "bold" }}>GDG</span>
+          </Navbar.Brand>
           <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-sm`} />
           <Navbar.Offcanvas
             id={`offcanvasNavbar-expand-sm`}
@@ -22,7 +24,7 @@ function Header() {
           >
             <Offcanvas.Header closeButton>
               <Offcanvas.Title id={`offcanvasNavbarLabel-expand-sm`}>
-                Master Menu
+                <Link to="/">Master Menu</Link>
               </Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
@@ -32,36 +34,36 @@ function Header() {
                   id={`offcanvasNavbarDropdown-expand-sm`}
                 >
                   <NavDropdown.Item href="#action3">
-                    Pesanan Barang
+                    <FaAngleRight /> Pesanan Barang
                   </NavDropdown.Item>
                   <NavDropdown.Item href="#action4">
-                    Order Barang
+                    <FaAngleRight /> Order Barang
                   </NavDropdown.Item>
                   <NavDropdown.Item href="#action5">
-                    Penerimaan Barang
+                    <FaAngleRight /> Penerimaan Barang
                   </NavDropdown.Item>
                   <NavDropdown.Item href="#action6">
-                    Pengeluaran Barang
-                  </NavDropdown.Item>
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item href="#action6">
-                    Penerimaan Mutasi Stok
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="#action6">
-                    Closingan Pesanan Barang
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="#action6">
-                    Closingan Orderan Barang
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="#action6">
-                    Retur Penerimaan
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="#action6">
-                    Stock Adjustment
+                    <FaAngleRight /> Pengeluaran Barang
                   </NavDropdown.Item>
                   <NavDropdown.Divider />
                   <NavDropdown.Item href="#action6">
-                    Pelunasan Hutang Usaha
+                    <FaAngleRight /> Penerimaan Mutasi Stok
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="#action6">
+                    <FaAngleRight /> Closingan Pesanan Barang
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="#action6">
+                    <FaAngleRight /> Closingan Orderan Barang
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="#action6">
+                    <FaAngleRight /> Retur Penerimaan
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="#action6">
+                    <FaAngleRight /> Stock Adjustment
+                  </NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item href="#action6">
+                    <FaAngleRight /> Pelunasan Hutang Usaha
                   </NavDropdown.Item>
                 </NavDropdown>
                 <NavDropdown
@@ -69,42 +71,42 @@ function Header() {
                   id={`offcanvasNavbarDropdown-expand-sm`}
                 >
                   <NavDropdown.Item href="#action3">
-                    Pesanan Barang
+                    <FaAngleRight /> Pesanan Barang
                   </NavDropdown.Item>
                   <NavDropdown.Item href="#action4">
-                    Order Barang
+                    <FaAngleRight /> Order Barang
                   </NavDropdown.Item>
                   <NavDropdown.Item href="#action5">
-                    Penerimaan
+                    <FaAngleRight /> Penerimaan
                   </NavDropdown.Item>
                   <NavDropdown.Item href="#action6">
-                    Retur Penerimaan
-                  </NavDropdown.Item>
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item href="#action6">
-                    Pengeluaran
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="#action6">
-                    Pengeluaran Mutasi Stock
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="#action6">
-                    Penerimaan Mutasi Stock
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="#action6">
-                    Stock Adjustment
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="#action6">
-                    Posisi Stock/Barang
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="#action6">
-                    Rincian Stock/Barang
+                    <FaAngleRight /> Retur Penerimaan
                   </NavDropdown.Item>
                   <NavDropdown.Divider />
                   <NavDropdown.Item href="#action6">
-                    Pelunasan Hutang Usaha
+                    <FaAngleRight /> Pengeluaran
                   </NavDropdown.Item>
                   <NavDropdown.Item href="#action6">
-                    Pembayaran Hutang
+                    <FaAngleRight /> Pengeluaran Mutasi Stock
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="#action6">
+                    <FaAngleRight /> Penerimaan Mutasi Stock
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="#action6">
+                    <FaAngleRight /> Stock Adjustment
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="#action6">
+                    <FaAngleRight /> Posisi Stock/Barang
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="#action6">
+                    <FaAngleRight /> Rincian Stock/Barang
+                  </NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item href="#action6">
+                    <FaAngleRight /> Pelunasan Hutang Usaha
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="#action6">
+                    <FaAngleRight /> Pembayaran Hutang
                   </NavDropdown.Item>
                 </NavDropdown>
                 <NavDropdown
@@ -112,37 +114,37 @@ function Header() {
                   id={`offcanvasNavbarDropdown-expand-sm`}
                 >
                   <NavDropdown.Item href="#action3">
-                    Setup Stock Distribusi
+                    <FaAngleRight /> Setup Stock Distribusi
                   </NavDropdown.Item>
                   <NavDropdown.Item href="#action4">
-                    Setup Merek Barang
+                    <FaAngleRight /> Setup Merek Barang
                   </NavDropdown.Item>
                   <NavDropdown.Item href="#action5">
-                    Setup Kategori Barang
+                    <FaAngleRight /> Setup Kategori Barang
                   </NavDropdown.Item>
                   <NavDropdown.Item href="#action6">
-                    Setup Gudang Barang
-                  </NavDropdown.Item>
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item href="#action6">
-                    Setup Satuan Barang
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="#action6">
-                    Setup Lokasi Transfer
+                    <FaAngleRight /> Setup Gudang Barang
                   </NavDropdown.Item>
                   <NavDropdown.Divider />
                   <NavDropdown.Item href="#action6">
-                    Setup Customer/Pelanggan
+                    <FaAngleRight /> Setup Satuan Barang
                   </NavDropdown.Item>
                   <NavDropdown.Item href="#action6">
-                    Setup Supplier/Pemasok
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="#action6">
-                    Setup Departemen
+                    <FaAngleRight /> Setup Lokasi Transfer
                   </NavDropdown.Item>
                   <NavDropdown.Divider />
                   <NavDropdown.Item href="#action6">
-                    Pindah Saldo Persediaan
+                    <FaAngleRight /> Setup Customer/Pelanggan
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="/supplier">
+                    <FaAngleRight /> Setup Supplier/Pemasok
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="#action6">
+                    <FaAngleRight /> Setup Departemen
+                  </NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item href="#action6">
+                    <FaAngleRight /> Pindah Saldo Persediaan
                   </NavDropdown.Item>
                 </NavDropdown>
               </Nav>
@@ -159,7 +161,7 @@ function Header() {
           </Navbar.Offcanvas>
         </Container>
       </Navbar>
-    </>
+    </div>
   );
 }
 
