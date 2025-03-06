@@ -6,14 +6,13 @@ import {
   Offcanvas,
 } from "react-bootstrap";
 import { FaAngleRight, FaArtstation } from "react-icons/fa";
-import { Link } from "react-router-dom";
 
 function Header() {
   return (
     <div>
-      <Navbar expand="sm" className="bg-white shadow mb-3">
+      <Navbar expand="sm" className="bg-white shadow mb-3 fixed-top">
         <Container fluid>
-          <Navbar.Brand href="#">
+          <Navbar.Brand href="/home">
             <FaArtstation /> <span style={{ fontWeight: "bold" }}>GDG</span>
           </Navbar.Brand>
           <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-sm`} />
@@ -24,7 +23,7 @@ function Header() {
           >
             <Offcanvas.Header closeButton>
               <Offcanvas.Title id={`offcanvasNavbarLabel-expand-sm`}>
-                <Link to="/">Master Menu</Link>
+                Master Menu
               </Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
@@ -33,10 +32,10 @@ function Header() {
                   title="Transaksi"
                   id={`offcanvasNavbarDropdown-expand-sm`}
                 >
-                  <NavDropdown.Item href="#action3">
+                  <NavDropdown.Item href="#action5">
                     <FaAngleRight /> Pesanan Barang
                   </NavDropdown.Item>
-                  <NavDropdown.Item href="#action4">
+                  <NavDropdown.Item href="#action5">
                     <FaAngleRight /> Order Barang
                   </NavDropdown.Item>
                   <NavDropdown.Item href="#action5">

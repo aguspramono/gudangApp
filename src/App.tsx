@@ -1,21 +1,18 @@
-import {
-  BrowserRouter,
-  HashRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
-import { Home } from "./pages/Home";
-import { Supplier } from "./pages/Supplier";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Header from "./component/Header.tsx";
+import { Home } from "./pages/Home.tsx";
+import { Supplier } from "./pages/Supplier.tsx";
 
 function App() {
   return (
     <BrowserRouter>
-      <Router>
+      <div>
+        <Header />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/supplier" element={<Supplier />} />
+          <Route path="/home" element={<Home />}></Route>
+          <Route path="/supplier" element={<Supplier />}></Route>
         </Routes>
-      </Router>
+      </div>
     </BrowserRouter>
   );
 }
