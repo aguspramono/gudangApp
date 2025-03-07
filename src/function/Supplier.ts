@@ -6,16 +6,70 @@ const headers = {
     "Content-Type": "multipart/form-data",
   };
   
-  export const getSupplier = async (wherelike="",page=0) => {
+  export const getSupplierNoFilt = async (wherelike:string) => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}supplier?like=${wherelike}`,
+        {
+          headers: headers,
+        }
+      );
+
+      return response.data.countsupplier;
+    } catch (error) {
+      return error;
+    }
+  };
+
+  export const getMaxNoAcc = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}maxnoacc`,
+        {
+          headers: headers,
+        }
+      );
+
+      return response.data.maxnosupp;
+    } catch (error) {
+      return error;
+    }
+  };
+
+
+  export const getSupplier = async (wherelike:string,pageprev:number,page:number) => {
       try {
         const response = await axios.get(
-          `${baseUrl}supplier?like=${wherelike}&page=${page}`,
+          `${baseUrl}filtersupplier?like=${wherelike}&pageprev=${pageprev}&page=${page}`,
           {
             headers: headers,
           }
         );
   
         return response.data.datasupplier;
+      } catch (error) {
+        return error;
+      }
+    };
+
+  export const createSupplier = async (sNo_Acc:string,Nama:string,Alamat:string,Kota:string,Phone:string,Email:string,TglUbah= new Date(),Username:string,Person:string) => {
+      try {
+        const response = await axios.post(
+          `${baseUrl}savesupplier`,
+          {
+              sNo_Acc:sNo_Acc,
+              Nama: Nama,
+              Alamat: Alamat,
+              Kota: Kota,
+              Phone: Phone,
+              Email: Email,
+              TglUbah:TglUbah,
+              Username: Username,
+              Person: Person,
+         }
+        );
+  
+        return response.data;
       } catch (error) {
         return error;
       }
