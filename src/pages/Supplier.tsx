@@ -10,14 +10,13 @@ import {
   Modal,
   Spinner,
 } from "react-bootstrap";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import {
   FaFileMedical,
   FaAngleLeft,
   FaAngleRight,
   FaAngleDoubleLeft,
   FaAngleDoubleRight,
-  FaCircleNotch,
 } from "react-icons/fa";
 
 import {
@@ -30,12 +29,14 @@ import { msgerr, msgsucc } from "./../function/Alert";
 
 export function Supplier() {
   const [show, setShow] = useState(false);
+  const [idNoAcc, setIdNoAcc] = useState("");
   const [supplier, setSupplier] = useState([]);
   const [suppliernoFilter, setSuppliernoFilter] = useState(0);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [noData, setNoData] = useState("");
   const [loadingData, setLoadingData] = useState(false);
+  const [loadSave, setLoadSave] = useState(true);
   const [page, setPage] = useState(1);
   const [limitQuery, setLimitQuery] = useState(0);
   const [nama, setNama] = useState("");
@@ -71,6 +72,37 @@ export function Supplier() {
   }
 
   async function saveDataSupplier() {
+    if (namaval === "") {
+      msgerr("Error", "Nama tidak boleh kosong");
+      setLoadSave(true);
+      return;
+    }
+
+    if (alamatval === "") {
+      msgerr("Error", "Alamat tidak boleh kosong");
+      setLoadSave(true);
+      return;
+    }
+
+    if (kotaval === "") {
+      msgerr("Error", "Kota tidak boleh kosong");
+      setLoadSave(true);
+      return;
+    }
+
+    if (teleponval === "") {
+      msgerr("Error", "Telepon tidak boleh kosong");
+      setLoadSave(true);
+      return;
+    }
+
+    if (contactval === "") {
+      msgerr("Error", "Contact person tidak boleh kosong");
+      setLoadSave(true);
+      return;
+    }
+    getDataMaxNo();
+
     let noaccount = parseInt(noacc) + 1;
     const response = await createSupplier(
       noaccount.toString(),
@@ -83,41 +115,31 @@ export function Supplier() {
       "admin",
       contactval
     );
-    console.log(response);
+
+    if (response["message"] == "success") {
+      msgsucc("success", "Supplier berhasil disimpan");
+      setNamaVal("");
+      setAlamatVal("");
+      setKotaVal("");
+      SetTeleponVal("");
+      setEmailVal("");
+      setContactval("");
+    } else {
+      msgerr("error", "Terjadi kesalahan");
+    }
   }
 
   const saveSupplier = () => {
-    if (namaval === "") {
-      msgerr("Error", "Nama tidak boleh kosong");
-      return;
-    }
-
-    if (alamatval === "") {
-      msgerr("Error", "Alamat tidak boleh kosong");
-      return;
-    }
-
-    if (kotaval === "") {
-      msgerr("Error", "Kota tidak boleh kosong");
-      return;
-    }
-
-    if (teleponval === "") {
-      msgerr("Error", "Telepon tidak boleh kosong");
-      return;
-    }
-
-    if (contactval === "") {
-      msgerr("Error", "Contact person tidak boleh kosong");
-      return;
-    }
-    getDataMaxNo();
     saveDataSupplier();
+    setLoadSave(false);
+    setTimeout(() => {
+      setLoadSave(true);
+    }, 2000);
   };
 
   const nextPage = () => {
     limitPage = Math.ceil(suppliernoFilter / 10);
-    setPage(page + 1);
+
     if (page >= limitPage) {
       setPage(limitPage);
     }
@@ -131,10 +153,11 @@ export function Supplier() {
     }
 
     getDataSupplier(nama, nextPageAct, 10);
+
+    setPage(page + 1);
   };
 
   const prevPage = () => {
-    setPage(page - 1);
     if (page < 2) {
       setPage(1);
     }
@@ -151,20 +174,23 @@ export function Supplier() {
     }
 
     getDataSupplier(nama, nextPageAct, 10);
+
+    setPage(page - 1);
   };
 
   const firstPage = () => {
-    setPage(1);
     setLimitQuery(0);
     getDataSupplier(nama, 0, 10);
+    setPage(1);
   };
 
   const lastPage = () => {
     dataCount = suppliernoFilter - (suppliernoFilter % 10);
     limitPage = Math.ceil(suppliernoFilter / 10);
-    setPage(limitPage);
+
     setLimitQuery(dataCount);
     getDataSupplier(nama, suppliernoFilter - (suppliernoFilter % 10), 10);
+    setPage(limitPage);
   };
 
   const loadingDatas = () => {
@@ -235,6 +261,7 @@ export function Supplier() {
               <Form.Control
                 type="text"
                 placeholder="Nama Supplier"
+                value={namaval}
                 onChange={(mytext) => setNamaVal(mytext.target.value)}
               />
             </Form.Group>
@@ -244,6 +271,7 @@ export function Supplier() {
                 as="textarea"
                 rows={3}
                 placeholder="Alamat Supplier"
+                value={alamatval}
                 onChange={(mytext) => setAlamatVal(mytext.target.value)}
               />
             </Form.Group>
@@ -252,6 +280,7 @@ export function Supplier() {
               <Form.Control
                 type="text"
                 placeholder="Kota Supplier"
+                value={kotaval}
                 onChange={(mytext) => setKotaVal(mytext.target.value)}
               />
             </Form.Group>
@@ -260,6 +289,7 @@ export function Supplier() {
               <Form.Control
                 type="text"
                 placeholder="Telepon/Fax"
+                value={teleponval}
                 onChange={(mytext) => SetTeleponVal(mytext.target.value)}
               />
             </Form.Group>
@@ -268,6 +298,7 @@ export function Supplier() {
               <Form.Control
                 type="email"
                 placeholder="Email"
+                value={emailval}
                 onChange={(mytext) => setEmailVal(mytext.target.value)}
               />
             </Form.Group>
@@ -276,6 +307,7 @@ export function Supplier() {
               <Form.Control
                 type="text"
                 placeholder="Contact Person"
+                value={contactval}
                 onChange={(mytext) => setContactval(mytext.target.value)}
               />
             </Form.Group>
@@ -286,6 +318,14 @@ export function Supplier() {
             Tutup
           </Button>
           <Button variant="primary" onClick={() => saveSupplier()}>
+            <Spinner
+              as="span"
+              animation="border"
+              size="sm"
+              role="status"
+              aria-hidden="true"
+              hidden={loadSave}
+            />{" "}
             Simpan
           </Button>
         </Modal.Footer>
@@ -319,7 +359,7 @@ export function Supplier() {
               return (
                 <div key={i}>
                   <ListGroup.Item
-                    onClick={() => console.log(item["sNo_Acc"])}
+                    onClick={() => setIdNoAcc(item["sNo_Acc"])}
                     style={{ cursor: "pointer" }}
                   >
                     {i + 1 + ". " + item["Nama"]}

@@ -2,16 +2,16 @@ import axios from "axios";
 
 const baseUrl = import.meta.env.VITE_PUBLIC_URL;
 
-const headers = {
-    "Content-Type": "multipart/form-data",
-  };
+  const headers= {
+      'Content-Type': 'multipart/form-data',
+      
+  }
   
   export const getSupplierNoFilt = async (wherelike:string) => {
     try {
       const response = await axios.get(
-        `${baseUrl}supplier?like=${wherelike}`,
-        {
-          headers: headers,
+        `${baseUrl}supplier?like=${wherelike}`,{
+          headers:headers
         }
       );
 
@@ -24,10 +24,7 @@ const headers = {
   export const getMaxNoAcc = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}maxnoacc`,
-        {
-          headers: headers,
-        }
+        `${baseUrl}maxnoacc`,{headers:headers}
       );
 
       return response.data.maxnosupp;
@@ -40,10 +37,7 @@ const headers = {
   export const getSupplier = async (wherelike:string,pageprev:number,page:number) => {
       try {
         const response = await axios.get(
-          `${baseUrl}filtersupplier?like=${wherelike}&pageprev=${pageprev}&page=${page}`,
-          {
-            headers: headers,
-          }
+          `${baseUrl}filtersupplier?like=${wherelike}&pageprev=${pageprev}&page=${page}`,{headers:headers}
         );
   
         return response.data.datasupplier;
@@ -54,20 +48,20 @@ const headers = {
 
   export const createSupplier = async (sNo_Acc:string,Nama:string,Alamat:string,Kota:string,Phone:string,Email:string,TglUbah= new Date(),Username:string,Person:string) => {
       try {
+        var postData = {
+          sNo_Acc:sNo_Acc,
+          Nama: Nama,
+          Alamat: Alamat,
+          Kota: Kota,
+          Phone: Phone,
+          Email: Email,
+          TglUbah:TglUbah,
+          Username: Username,
+          Person: Person,
+        };
+
         const response = await axios.post(
-          `${baseUrl}savesupplier`,
-          {
-              sNo_Acc:sNo_Acc,
-              Nama: Nama,
-              Alamat: Alamat,
-              Kota: Kota,
-              Phone: Phone,
-              Email: Email,
-              TglUbah:TglUbah,
-              Username: Username,
-              Person: Person,
-         }
-        );
+          `${baseUrl}savesupplier`,postData, {headers:headers});
   
         return response.data;
       } catch (error) {
