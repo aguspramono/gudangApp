@@ -17,6 +17,9 @@ import {
   FaAngleRight,
   FaAngleDoubleLeft,
   FaAngleDoubleRight,
+  FaRegSave,
+  FaEdit,
+  FaRegTrashAlt,
 } from "react-icons/fa";
 
 import {
@@ -24,15 +27,19 @@ import {
   getSupplierNoFilt,
   createSupplier,
   getMaxNoAcc,
+  getSupplierId,
+  updateSupplier,
+  deleteSupplier,
 } from "./../function/Supplier";
 import { msgerr, msgsucc } from "./../function/Alert";
 
 export function Supplier() {
   const [show, setShow] = useState(false);
-  const [idNoAcc, setIdNoAcc] = useState("");
   const [supplier, setSupplier] = useState([]);
   const [suppliernoFilter, setSuppliernoFilter] = useState(0);
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setShow(false), bersih();
+  };
   const handleShow = () => setShow(true);
   const [noData, setNoData] = useState("");
   const [loadingData, setLoadingData] = useState(false);
@@ -41,6 +48,10 @@ export function Supplier() {
   const [limitQuery, setLimitQuery] = useState(0);
   const [nama, setNama] = useState("");
   const [noacc, setNoAcc] = useState("");
+
+  //useState value data
+
+  const [noaccval, setNoAccVal] = useState("");
   const [namaval, setNamaVal] = useState("");
   const [alamatval, setAlamatVal] = useState("");
   const [kotaval, setKotaVal] = useState("");
@@ -52,18 +63,49 @@ export function Supplier() {
   let nextPageAct = 0;
   let dataCount = 0;
 
+  const bersih = () => {
+    setNoAccVal("");
+    setNamaVal("");
+    setAlamatVal("");
+    setKotaVal("");
+    SetTeleponVal("");
+    setEmailVal("");
+    setContactval("");
+  };
+
+  async function deleteDataSupplier() {
+    const response = await deleteSupplier(noaccval);
+    console.log(response);
+  }
+
   async function getDataSupplier(
-    like = "",
-    limitqueryprev = 0,
-    limitquery = 10
+    like: string,
+    limitqueryprev: number,
+    limitquery: number
   ) {
     const response = await getSupplier(like, limitqueryprev, limitquery);
     setSupplier(response);
   }
 
-  async function getDataSupplierNoFilt(like = "") {
+  async function getDataSupplierNoFilt(like: string) {
     const response = await getSupplierNoFilt(like);
     setSuppliernoFilter(response);
+  }
+
+  async function getDataSupplierById(id: string) {
+    const response = await getSupplierId(id);
+
+    response?.map((item: any) => {
+      setNoAccVal(item.sNo_Acc);
+      setNamaVal(item.Nama);
+      setAlamatVal(item.Alamat);
+      setKotaVal(item.Kota);
+      SetTeleponVal(item.Phone);
+      setEmailVal(item.Email);
+      setContactval(item.Person);
+    });
+
+    handleShow();
   }
 
   async function getDataMaxNo() {
@@ -96,11 +138,6 @@ export function Supplier() {
       return;
     }
 
-    if (contactval === "") {
-      msgerr("Error", "Contact person tidak boleh kosong");
-      setLoadSave(true);
-      return;
-    }
     getDataMaxNo();
 
     let noaccount = parseInt(noacc) + 1;
@@ -118,19 +155,67 @@ export function Supplier() {
 
     if (response["message"] == "success") {
       msgsucc("success", "Supplier berhasil disimpan");
-      setNamaVal("");
-      setAlamatVal("");
-      setKotaVal("");
-      SetTeleponVal("");
-      setEmailVal("");
-      setContactval("");
+      bersih();
+    } else {
+      msgerr("error", "Terjadi kesalahan");
+    }
+  }
+
+  async function updateDataSupplier() {
+    if (namaval === "") {
+      msgerr("Error", "Nama tidak boleh kosong");
+      setLoadSave(true);
+      return;
+    }
+
+    if (alamatval === "") {
+      msgerr("Error", "Alamat tidak boleh kosong");
+      setLoadSave(true);
+      return;
+    }
+
+    if (kotaval === "") {
+      msgerr("Error", "Kota tidak boleh kosong");
+      setLoadSave(true);
+      return;
+    }
+
+    if (teleponval === "") {
+      msgerr("Error", "Telepon tidak boleh kosong");
+      setLoadSave(true);
+      return;
+    }
+
+    const response = await updateSupplier(
+      noaccval,
+      namaval,
+      alamatval,
+      kotaval,
+      teleponval,
+      emailval,
+      new Date(),
+      "admin",
+      contactval
+    );
+
+    //console.log(response);
+
+    if (response["message"] == "success") {
+      msgsucc("success", "Supplier berhasil diubah");
+      bersih();
     } else {
       msgerr("error", "Terjadi kesalahan");
     }
   }
 
   const saveSupplier = () => {
-    saveDataSupplier();
+    if (noaccval === "") {
+      saveDataSupplier();
+      getDataMaxNo();
+    } else {
+      updateDataSupplier();
+    }
+
     setLoadSave(false);
     setTimeout(() => {
       setLoadSave(true);
@@ -142,6 +227,8 @@ export function Supplier() {
 
     if (page >= limitPage) {
       setPage(limitPage);
+    } else {
+      setPage(page + 1);
     }
 
     nextPageAct = limitQuery + 10;
@@ -153,13 +240,13 @@ export function Supplier() {
     }
 
     getDataSupplier(nama, nextPageAct, 10);
-
-    setPage(page + 1);
   };
 
   const prevPage = () => {
-    if (page < 2) {
+    if (page <= 1) {
       setPage(1);
+    } else {
+      setPage(page - 1);
     }
 
     if (limitQuery % 10 != 0) {
@@ -174,8 +261,6 @@ export function Supplier() {
     }
 
     getDataSupplier(nama, nextPageAct, 10);
-
-    setPage(page - 1);
   };
 
   const firstPage = () => {
@@ -251,7 +336,7 @@ export function Supplier() {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Tambah Supplier
+            {noaccval === "" ? "Tambah" : "Detail"} Supplier
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -325,9 +410,17 @@ export function Supplier() {
               role="status"
               aria-hidden="true"
               hidden={loadSave}
-            />{" "}
-            Simpan
+            />
+            {noaccval === "" ? <FaRegSave /> : <FaEdit />}
+            {noaccval === "" ? " Simpan" : " Simpan Edit"}
           </Button>
+          {noaccval != "" ? (
+            <Button variant="danger" onClick={() => deleteDataSupplier()}>
+              <FaRegTrashAlt /> Hapus
+            </Button>
+          ) : (
+            ""
+          )}
         </Modal.Footer>
       </Modal>
       <Card style={{ width: "100%" }}>
@@ -359,7 +452,7 @@ export function Supplier() {
               return (
                 <div key={i}>
                   <ListGroup.Item
-                    onClick={() => setIdNoAcc(item["sNo_Acc"])}
+                    onDoubleClick={() => getDataSupplierById(item["sNo_Acc"])}
                     style={{ cursor: "pointer" }}
                   >
                     {i + 1 + ". " + item["Nama"]}
