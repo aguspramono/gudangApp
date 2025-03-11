@@ -125,20 +125,17 @@ function Header() {
                     <FaAngleRight /> Setup Gudang Barang
                   </NavDropdown.Item>
                   <NavDropdown.Divider />
-                  <NavDropdown.Item href="#action6">
+                  <NavDropdown.Item href="/satuan">
                     <FaAngleRight /> Setup Satuan Barang
                   </NavDropdown.Item>
-                  <NavDropdown.Item href="#action6">
+                  <NavDropdown.Item href="/lokasitransfer">
                     <FaAngleRight /> Setup Lokasi Transfer
                   </NavDropdown.Item>
                   <NavDropdown.Divider />
-                  <NavDropdown.Item href="#action6">
-                    <FaAngleRight /> Setup Customer/Pelanggan
-                  </NavDropdown.Item>
                   <NavDropdown.Item href="/supplier">
                     <FaAngleRight /> Setup Supplier/Pemasok
                   </NavDropdown.Item>
-                  <NavDropdown.Item href="#action6">
+                  <NavDropdown.Item href="/departemen">
                     <FaAngleRight /> Setup Departemen
                   </NavDropdown.Item>
                   <NavDropdown.Divider />

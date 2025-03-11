@@ -23,20 +23,19 @@ import {
 } from "react-icons/fa";
 
 import {
-  getSupplier,
-  getSupplierNoFilt,
-  createSupplier,
-  getMaxNoAcc,
-  getSupplierId,
-  updateSupplier,
-  deleteSupplier,
-} from "./../function/Supplier";
+  getLokasiCount,
+  getDetailLokasi,
+  getLokasi,
+  createLokasi,
+  updateLokasi,
+  deleteLokasi,
+} from "./../function/Lokasi";
 import { createMessage, createMessageConfirm } from "./../function/Alert";
 
-export function Supplier() {
+export function Lokasi() {
   const [show, setShow] = useState(false);
-  const [supplier, setSupplier] = useState([]);
-  const [suppliernoFilter, setSuppliernoFilter] = useState(0);
+  const [lokasi, setLokasi] = useState([]);
+  const [countlok, setCountlok] = useState(0);
   const handleClose = () => {
     setShow(false), bersih();
   };
@@ -47,34 +46,26 @@ export function Supplier() {
   const [loadDelete, setLoadDelete] = useState(true);
   const [page, setPage] = useState(1);
   const [limitQuery, setLimitQuery] = useState(0);
-  const [nama, setNama] = useState("");
-  const [noacc, setNoAcc] = useState("");
+  const [ketlok, setKetLok] = useState("");
+  const [kodelok, setKodeLok] = useState("");
 
   //useState value data
 
-  const [noaccval, setNoAccVal] = useState("");
-  const [namaval, setNamaVal] = useState("");
-  const [alamatval, setAlamatVal] = useState("");
-  const [kotaval, setKotaVal] = useState("");
-  const [teleponval, SetTeleponVal] = useState("");
-  const [emailval, setEmailVal] = useState("");
-  const [contactval, setContactval] = useState("");
+  const [kodelokval, setKodelokval] = useState("");
+  const [keteranganval, setKeteranganval] = useState("");
 
   let limitPage = 0;
   let nextPageAct = 0;
   let dataCount = 0;
+  let datacountbyid = 0;
 
   const bersih = () => {
-    setNoAccVal("");
-    setNamaVal("");
-    setAlamatVal("");
-    setKotaVal("");
-    SetTeleponVal("");
-    setEmailVal("");
-    setContactval("");
+    setKodelokval("");
+    setKeteranganval("");
+    setKodeLok("");
   };
 
-  async function deleteDataSupplier() {
+  async function deleteLokAct() {
     createMessageConfirm(
       "Peringatan",
       "Yakin ingin menghapus data ini?",
@@ -85,11 +76,12 @@ export function Supplier() {
       if (result == "confirmed") {
         setLoadDelete(false);
 
-        const response = await deleteSupplier(noaccval);
+        const response = await deleteLokasi(kodelok);
 
         if (response["message"] == "success") {
-          createMessage("Success", "Supplier berhasil dihapus", "success").then(
+          createMessage("Success", "Lokasi berhasil dihapus", "success").then(
             () => {
+              loadingDatas();
               bersih();
               handleClose();
             }
@@ -105,122 +97,100 @@ export function Supplier() {
     }, 2000);
   }
 
-  async function getDataSupplier(
+  async function getDataLokAct(
     like: string,
     limitqueryprev: number,
     limitquery: number
   ) {
-    const response = await getSupplier(like, limitqueryprev, limitquery);
-    setSupplier(response);
+    const response = await getLokasi(like, limitqueryprev, limitquery);
+    setLokasi(response);
   }
 
-  async function getDataSupplierNoFilt(like: string) {
-    const response = await getSupplierNoFilt(like);
-    setSuppliernoFilter(response);
+  async function getCountLokAct(like: string) {
+    const response = await getLokasiCount(like);
+    setCountlok(response);
   }
 
-  async function getDataSupplierById(id: string) {
-    const response = await getSupplierId(id);
+  async function getCountLokByIDAct(id: string) {
+    const response = await getDetailLokasi(id);
+    datacountbyid = response.length;
+  }
+
+  async function getDetailLokAct(id: string) {
+    const response = await getDetailLokasi(id);
 
     response?.map((item: any) => {
-      setNoAccVal(item.sNo_Acc);
-      setNamaVal(item.Nama);
-      setAlamatVal(item.Alamat);
-      setKotaVal(item.Kota);
-      SetTeleponVal(item.Phone);
-      setEmailVal(item.Email);
-      setContactval(item.Person);
+      setKodelokval(item.Lokasi);
+      setKeteranganval(item.Keterangan);
+      setKodeLok(item.Lokasi);
     });
 
     handleShow();
   }
 
-  async function getDataMaxNo() {
-    const response = await getMaxNoAcc();
-    setNoAcc(response[0]["noacc"]);
-  }
-
-  async function saveDataSupplier() {
-    if (namaval === "") {
-      createMessage("Error", "Nama tidak boleh kosong", "error").then(() => {
-        setLoadSave(true);
-      });
-    } else if (alamatval === "") {
-      createMessage("Error", "Alamat tidak boleh kosong", "error").then(() => {
-        setLoadSave(true);
-      });
-    } else if (kotaval === "") {
-      createMessage("Error", "Kota tidak boleh kosong", "error").then(() => {
-        setLoadSave(true);
-      });
-    } else if (teleponval === "") {
-      createMessage("Error", "Telepon tidak boleh kosong", "error").then(() => {
-        setLoadSave(true);
-      });
-    } else {
-      getDataMaxNo();
-
-      let noaccount = parseInt(noacc) + 1;
-      const response = await createSupplier(
-        noaccount.toString(),
-        namaval,
-        alamatval,
-        kotaval,
-        teleponval,
-        emailval,
-        new Date(),
-        "admin",
-        contactval
+  async function saveDataLokAct() {
+    if (kodelokval === "") {
+      createMessage("Error", "Kode lokasi tidak boleh kosong", "error").then(
+        () => {
+          setLoadSave(true);
+        }
       );
-
-      if (response["message"] == "success") {
-        createMessage("Success", "Supplier berhasil disimpan", "success").then(
+    } else {
+      getCountLokByIDAct(kodelokval);
+      if (datacountbyid > 0) {
+        createMessage("Error", "Kode lokasi ini sudah dipakai", "error").then(
           () => {
-            bersih();
             setLoadSave(true);
           }
         );
       } else {
-        createMessage("Error", "Terjadi kesalahan", "error").then(() => {
-          setLoadSave(true);
-        });
+        const response = await createLokasi(
+          kodelokval,
+          keteranganval,
+          new Date(),
+          "admin"
+        );
+
+        if (response["message"] == "success") {
+          createMessage("Success", "Lokasi berhasil disimpan", "success").then(
+            () => {
+              loadingDatas();
+              bersih();
+              setLoadSave(true);
+            }
+          );
+        } else {
+          createMessage(
+            "Error",
+            "Terjadi kesalahan, kode sudah dipakai",
+            "error"
+          ).then(() => {
+            setLoadSave(true);
+          });
+        }
       }
     }
   }
 
-  async function updateDataSupplier() {
-    if (namaval === "") {
-      createMessage("Error", "Nama tidak boleh kosong", "error").then(() => {
-        setLoadSave(true);
-      });
-    } else if (alamatval === "") {
-      createMessage("Error", "Alamat tidak boleh kosong", "error").then(() => {
-        setLoadSave(true);
-      });
-    } else if (kotaval === "") {
-      createMessage("Error", "Kota tidak boleh kosong", "error").then(() => {
-        setLoadSave(true);
-      });
-    } else if (teleponval === "") {
-      createMessage("Error", "Telepon tidak boleh kosong", "error").then(() => {
-        setLoadSave(true);
-      });
+  async function updateDataLokAct() {
+    if (keteranganval === "") {
+      createMessage("Error", "Keterangan tidak boleh kosong", "error").then(
+        () => {
+          setLoadSave(true);
+        }
+      );
     } else {
-      const response = await updateSupplier(
-        noaccval,
-        namaval,
-        alamatval,
-        kotaval,
-        teleponval,
-        emailval,
+      const response = await updateLokasi(
+        kodelokval,
+        keteranganval,
         new Date(),
-        "admin",
-        contactval
+        "admin"
       );
 
       if (response["message"] == "success") {
-        createMessage("Success", "Supplier berhasil diubah", "success").then(
+        createMessage("Success", "Lokasi berhasil diubah", "success").then(
           () => {
+            loadingDatas();
             bersih();
             setLoadSave(true);
             handleClose();
@@ -234,12 +204,11 @@ export function Supplier() {
     }
   }
 
-  const saveSupplier = () => {
-    if (noaccval === "") {
-      saveDataSupplier();
-      getDataMaxNo();
+  const saveLok = () => {
+    if (kodelok === "") {
+      saveDataLokAct();
     } else {
-      updateDataSupplier();
+      updateDataLokAct();
     }
 
     setLoadSave(false);
@@ -249,7 +218,7 @@ export function Supplier() {
   };
 
   const nextPage = () => {
-    limitPage = Math.ceil(suppliernoFilter / 10);
+    limitPage = Math.ceil(countlok / 10);
 
     if (page >= limitPage) {
       setPage(limitPage);
@@ -260,12 +229,12 @@ export function Supplier() {
     nextPageAct = limitQuery + 10;
     setLimitQuery(nextPageAct);
 
-    if (nextPageAct >= suppliernoFilter) {
-      nextPageAct = suppliernoFilter;
+    if (nextPageAct >= countlok) {
+      nextPageAct = countlok;
       setLimitQuery(nextPageAct);
     }
 
-    getDataSupplier(nama, nextPageAct, 10);
+    getDataLokAct(ketlok, nextPageAct, 10);
   };
 
   const prevPage = () => {
@@ -286,28 +255,28 @@ export function Supplier() {
       setLimitQuery(nextPageAct);
     }
 
-    getDataSupplier(nama, nextPageAct, 10);
+    getDataLokAct(ketlok, nextPageAct, 10);
   };
 
   const firstPage = () => {
     setLimitQuery(0);
-    getDataSupplier(nama, 0, 10);
+    getDataLokAct(ketlok, 0, 10);
     setPage(1);
   };
 
   const lastPage = () => {
-    dataCount = suppliernoFilter - (suppliernoFilter % 10);
-    limitPage = Math.ceil(suppliernoFilter / 10);
+    dataCount = countlok - (countlok % 10);
+    limitPage = Math.ceil(countlok / 10);
 
     setLimitQuery(dataCount);
-    getDataSupplier(nama, suppliernoFilter - (suppliernoFilter % 10), 10);
+    getDataLokAct(ketlok, countlok - (countlok % 10), 10);
     setPage(limitPage);
   };
 
   const loadingDatas = () => {
     setLoadingData(false);
-    getDataSupplierNoFilt(nama);
-    getDataSupplier(nama, 0, 10);
+    getCountLokAct(ketlok);
+    getDataLokAct(ketlok, 0, 10);
     setNoData("");
     setPage(1);
     setTimeout(() => {
@@ -318,14 +287,13 @@ export function Supplier() {
 
   useEffect(() => {
     loadingDatas();
-    getDataMaxNo();
   }, []);
 
   return (
     <div style={{ paddingLeft: 20, paddingRight: 20, marginTop: "80px" }}>
       <Breadcrumb>
         <Breadcrumb.Item href="/home">Dashboard</Breadcrumb.Item>
-        <Breadcrumb.Item active>Supplier</Breadcrumb.Item>
+        <Breadcrumb.Item active>Lokasi</Breadcrumb.Item>
       </Breadcrumb>
       <ButtonToolbar
         className="justify-content-between mb-3"
@@ -339,10 +307,10 @@ export function Supplier() {
         <InputGroup>
           <Form.Control
             type="text"
-            placeholder="Cari Supplier [Enter]"
+            placeholder="Cari Lokasi [Enter]"
             aria-label="Input group example"
             aria-describedby="btnGroupAddon2"
-            onChange={(mytext) => setNama(mytext.target.value)}
+            onChange={(mytext) => setKetLok(mytext.target.value)}
             onKeyUp={(event: { key: string }) => {
               if (event.key === "Enter") {
                 loadingDatas();
@@ -362,64 +330,28 @@ export function Supplier() {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            {noaccval === "" ? "Tambah" : "Detail"} Supplier
+            {kodelok === "" ? "Tambah" : "Detail"} Lokasi
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group className="mb-3" controlId="namasupplier">
-              <Form.Label>Nama Supplier</Form.Label>
+            <Form.Group className="mb-3" controlId="kodelokasi">
+              <Form.Label>Kode Lokasi</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Nama Supplier"
-                value={namaval}
-                onChange={(mytext) => setNamaVal(mytext.target.value)}
+                placeholder="Kode Lokasi"
+                value={kodelokval}
+                onChange={(mytext) => setKodelokval(mytext.target.value)}
+                disabled={kodelok === "" ? false : true}
               />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="alamatsupplier">
-              <Form.Label>Alamat Supplier</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                placeholder="Alamat Supplier"
-                value={alamatval}
-                onChange={(mytext) => setAlamatVal(mytext.target.value)}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="kotasupplier">
-              <Form.Label>Kota Supplier</Form.Label>
+            <Form.Group className="mb-3" controlId="keteranganlokasi">
+              <Form.Label>Keterangan Lokasi</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Kota Supplier"
-                value={kotaval}
-                onChange={(mytext) => setKotaVal(mytext.target.value)}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="teleponsupplier">
-              <Form.Label>Telepon/Fax</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Telepon/Fax"
-                value={teleponval}
-                onChange={(mytext) => SetTeleponVal(mytext.target.value)}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="emailsupplier">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Email"
-                value={emailval}
-                onChange={(mytext) => setEmailVal(mytext.target.value)}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="contactpersonsupplier">
-              <Form.Label>Contact Person</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Contact Person"
-                value={contactval}
-                onChange={(mytext) => setContactval(mytext.target.value)}
+                placeholder="Keterangan"
+                value={keteranganval}
+                onChange={(mytext) => setKeteranganval(mytext.target.value)}
               />
             </Form.Group>
           </Form>
@@ -428,7 +360,7 @@ export function Supplier() {
           <Button variant="secondary" onClick={handleClose}>
             Tutup
           </Button>
-          <Button variant="primary" onClick={() => saveSupplier()}>
+          <Button variant="primary" onClick={() => saveLok()}>
             <Spinner
               as="span"
               animation="border"
@@ -437,11 +369,11 @@ export function Supplier() {
               aria-hidden="true"
               hidden={loadSave}
             />{" "}
-            {noaccval === "" ? <FaRegSave /> : <FaEdit />}
-            {noaccval === "" ? " Simpan" : " Simpan Edit"}
+            {kodelok === "" ? <FaRegSave /> : <FaEdit />}
+            {kodelok === "" ? " Simpan" : " Simpan Edit"}
           </Button>
-          {noaccval != "" ? (
-            <Button variant="danger" onClick={() => deleteDataSupplier()}>
+          {kodelok != "" ? (
+            <Button variant="danger" onClick={() => deleteLokAct()}>
               <Spinner
                 as="span"
                 animation="border"
@@ -459,10 +391,10 @@ export function Supplier() {
       </Modal>
       <Card style={{ width: "100%" }}>
         <Card.Header>
-          <b> Nama Supplier </b>
+          <b> Departemen </b>
         </Card.Header>
         <ListGroup variant="flush">
-          {supplier?.length < 1 ? (
+          {lokasi?.length < 1 ? (
             <div
               style={{
                 display: "flex",
@@ -482,14 +414,14 @@ export function Supplier() {
               <span>{noData}</span>
             </div>
           ) : (
-            supplier?.map((item, i) => {
+            lokasi?.map((item, i) => {
               return (
                 <div key={i}>
                   <ListGroup.Item
-                    onDoubleClick={() => getDataSupplierById(item["sNo_Acc"])}
+                    onDoubleClick={() => getDetailLokAct(item["Lokasi"])}
                     style={{ cursor: "pointer" }}
                   >
-                    {i + 1 + ". " + item["Nama"]}
+                    {i + 1 + ". " + item["Lokasi"]}
                   </ListGroup.Item>
                 </div>
               );
@@ -501,7 +433,7 @@ export function Supplier() {
         <span>
           <small>
             <i>
-              Total Data : <strong>{suppliernoFilter}</strong>
+              Total Data : <strong>{countlok}</strong>
             </i>
           </small>
         </span>
