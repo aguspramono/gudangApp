@@ -115,13 +115,13 @@ function Header() {
                   <NavDropdown.Item href="#action3">
                     <FaAngleRight /> Setup Stock Distribusi
                   </NavDropdown.Item>
-                  <NavDropdown.Item href="#action4">
+                  <NavDropdown.Item href="/merek">
                     <FaAngleRight /> Setup Merek Barang
                   </NavDropdown.Item>
                   <NavDropdown.Item href="#action5">
                     <FaAngleRight /> Setup Kategori Barang
                   </NavDropdown.Item>
-                  <NavDropdown.Item href="#action6">
+                  <NavDropdown.Item href="/gudang">
                     <FaAngleRight /> Setup Gudang Barang
                   </NavDropdown.Item>
                   <NavDropdown.Divider />

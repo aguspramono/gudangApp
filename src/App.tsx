@@ -5,6 +5,8 @@ import { Supplier } from "./pages/Supplier.tsx";
 import { Departemen } from "./pages/Departemen.tsx";
 import { Lokasi } from "./pages/Lokasi.tsx";
 import { Satuan } from "./pages/Satuan.tsx";
+import { Gudang } from "./pages/Gudang.tsx";
+import { Merk } from "./pages/Merk.tsx";
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
           <Route path="/departemen" element={<Departemen />}></Route>
           <Route path="/lokasitransfer" element={<Lokasi />}></Route>
           <Route path="/satuan" element={<Satuan />}></Route>
+          <Route path="/gudang" element={<Gudang />}></Route>
+          <Route path="/merek" element={<Merk />}></Route>
         </Routes>
       </div>
     </BrowserRouter>

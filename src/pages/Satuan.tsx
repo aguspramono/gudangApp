@@ -381,7 +381,7 @@ export function Satuan() {
       </Modal>
       <Card style={{ width: "100%" }}>
         <Card.Header>
-          <b> Departemen </b>
+          <b> Satuan </b>
         </Card.Header>
         <ListGroup variant="flush">
           {satuan?.length < 1 ? (

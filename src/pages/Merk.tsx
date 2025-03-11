@@ -23,19 +23,19 @@ import {
 } from "react-icons/fa";
 
 import {
-  getLokasiCount,
-  getDetailLokasi,
-  getLokasi,
-  createLokasi,
-  updateLokasi,
-  deleteLokasi,
-} from "./../function/Lokasi";
+  getMerkCount,
+  getDetailMerk,
+  getMerk,
+  createMerk,
+  updateMerk,
+  deleteMerk,
+} from "./../function/Merk";
 import { createMessage, createMessageConfirm } from "./../function/Alert";
 
-export function Lokasi() {
+export function Merk() {
   const [show, setShow] = useState(false);
-  const [lokasi, setLokasi] = useState([]);
-  const [countlok, setCountlok] = useState(0);
+  const [merk, setMerk] = useState([]);
+  const [countmerk, setCountmerk] = useState(0);
   const handleClose = () => {
     setShow(false), bersih();
   };
@@ -46,12 +46,12 @@ export function Lokasi() {
   const [loadDelete, setLoadDelete] = useState(true);
   const [page, setPage] = useState(1);
   const [limitQuery, setLimitQuery] = useState(0);
-  const [ketlok, setKetLok] = useState("");
-  const [kodelok, setKodeLok] = useState("");
+  const [ketmerk, setKetmerk] = useState("");
+  const [kodemerk, setKodeMerk] = useState("");
 
   //useState value data
 
-  const [kodelokval, setKodelokval] = useState("");
+  const [kodemerkval, setKodemerkval] = useState("");
   const [keteranganval, setKeteranganval] = useState("");
 
   let limitPage = 0;
@@ -60,12 +60,12 @@ export function Lokasi() {
   let datacountbyid = 0;
 
   const bersih = () => {
-    setKodelokval("");
+    setKodeMerk("");
     setKeteranganval("");
-    setKodeLok("");
+    setKodemerkval("");
   };
 
-  async function deleteLokAct() {
+  async function deleteMerkAct() {
     createMessageConfirm(
       "Peringatan",
       "Yakin ingin menghapus data ini?",
@@ -76,10 +76,10 @@ export function Lokasi() {
       if (result == "confirmed") {
         setLoadDelete(false);
 
-        const response = await deleteLokasi(kodelok);
+        const response = await deleteMerk(kodemerk);
 
         if (response["message"] == "success") {
-          createMessage("Success", "Lokasi berhasil dihapus", "success").then(
+          createMessage("Success", "Merk berhasil dihapus", "success").then(
             () => {
               loadingDatas();
               bersih();
@@ -97,62 +97,62 @@ export function Lokasi() {
     }, 2000);
   }
 
-  async function getDataLokAct(
+  async function getDataMerkAct(
     like: string,
     limitqueryprev: number,
     limitquery: number
   ) {
-    const response = await getLokasi(like, limitqueryprev, limitquery);
-    setLokasi(response);
+    const response = await getMerk(like, limitqueryprev, limitquery);
+    setMerk(response);
   }
 
-  async function getCountLokAct(like: string) {
-    const response = await getLokasiCount(like);
-    setCountlok(response);
+  async function getCountMerkAct(like: string) {
+    const response = await getMerkCount(like);
+    setCountmerk(response);
   }
 
-  async function getCountLokByIDAct(id: string) {
-    const response = await getDetailLokasi(id);
+  async function getCountMerkByIDAct(id: string) {
+    const response = await getDetailMerk(id);
     datacountbyid = response.length;
   }
 
-  async function getDetailLokAct(id: string) {
-    const response = await getDetailLokasi(id);
+  async function getDetailMerkAct(id: string) {
+    const response = await getDetailMerk(id);
 
     response?.map((item: any) => {
-      setKodelokval(item.Lokasi);
+      setKodemerkval(item.Merek);
       setKeteranganval(item.Keterangan);
-      setKodeLok(item.Lokasi);
+      setKodeMerk(item.Merek);
     });
 
     handleShow();
   }
 
-  async function saveDataLokAct() {
-    if (kodelokval === "") {
-      createMessage("Error", "Kode lokasi tidak boleh kosong", "error").then(
+  async function saveDataMerkAct() {
+    if (kodemerkval === "") {
+      createMessage("Error", "Kode gudang tidak boleh kosong", "error").then(
         () => {
           setLoadSave(true);
         }
       );
     } else {
-      getCountLokByIDAct(kodelokval);
+      getCountMerkByIDAct(kodemerkval);
       if (datacountbyid > 0) {
-        createMessage("Error", "Kode lokasi ini sudah dipakai", "error").then(
+        createMessage("Error", "Kode gudang ini sudah dipakai", "error").then(
           () => {
             setLoadSave(true);
           }
         );
       } else {
-        const response = await createLokasi(
-          kodelokval,
+        const response = await createMerk(
+          kodemerkval,
           keteranganval,
           new Date(),
           "admin"
         );
 
         if (response["message"] == "success") {
-          createMessage("Success", "Lokasi berhasil disimpan", "success").then(
+          createMessage("Success", "Gudang berhasil disimpan", "success").then(
             () => {
               loadingDatas();
               bersih();
@@ -162,7 +162,7 @@ export function Lokasi() {
         } else {
           createMessage(
             "Error",
-            "Terjadi kesalahan, kode sudah dipakai",
+            "Terjadi kesalahan, gudang sudah dipakai",
             "error"
           ).then(() => {
             setLoadSave(true);
@@ -172,43 +172,33 @@ export function Lokasi() {
     }
   }
 
-  async function updateDataLokAct() {
-    if (keteranganval === "") {
-      createMessage("Error", "Keterangan tidak boleh kosong", "error").then(
-        () => {
-          setLoadSave(true);
-        }
-      );
-    } else {
-      const response = await updateLokasi(
-        kodelokval,
-        keteranganval,
-        new Date(),
-        "admin"
-      );
+  async function updateDataMerkAct() {
+    const response = await updateMerk(
+      kodemerkval,
+      keteranganval,
+      new Date(),
+      "admin"
+    );
 
-      if (response["message"] == "success") {
-        createMessage("Success", "Lokasi berhasil diubah", "success").then(
-          () => {
-            loadingDatas();
-            bersih();
-            setLoadSave(true);
-            handleClose();
-          }
-        );
-      } else {
-        createMessage("Error", "Terjadi kesalahan", "error").then(() => {
-          setLoadSave(true);
-        });
-      }
+    if (response["message"] == "success") {
+      createMessage("Success", "Merek berhasil diubah", "success").then(() => {
+        loadingDatas();
+        bersih();
+        setLoadSave(true);
+        handleClose();
+      });
+    } else {
+      createMessage("Error", "Terjadi kesalahan", "error").then(() => {
+        setLoadSave(true);
+      });
     }
   }
 
-  const saveLok = () => {
-    if (kodelok === "") {
-      saveDataLokAct();
+  const saveMerk = () => {
+    if (kodemerk === "") {
+      saveDataMerkAct();
     } else {
-      updateDataLokAct();
+      updateDataMerkAct();
     }
 
     setLoadSave(false);
@@ -218,7 +208,7 @@ export function Lokasi() {
   };
 
   const nextPage = () => {
-    limitPage = Math.ceil(countlok / 10);
+    limitPage = Math.ceil(countmerk / 10);
 
     if (page >= limitPage) {
       setPage(limitPage);
@@ -229,12 +219,12 @@ export function Lokasi() {
     nextPageAct = limitQuery + 10;
     setLimitQuery(nextPageAct);
 
-    if (nextPageAct >= countlok) {
-      nextPageAct = countlok;
+    if (nextPageAct >= countmerk) {
+      nextPageAct = countmerk;
       setLimitQuery(nextPageAct);
     }
 
-    getDataLokAct(ketlok, nextPageAct, 10);
+    getDataMerkAct(ketmerk, nextPageAct, 10);
   };
 
   const prevPage = () => {
@@ -255,28 +245,28 @@ export function Lokasi() {
       setLimitQuery(nextPageAct);
     }
 
-    getDataLokAct(ketlok, nextPageAct, 10);
+    getDataMerkAct(ketmerk, nextPageAct, 10);
   };
 
   const firstPage = () => {
     setLimitQuery(0);
-    getDataLokAct(ketlok, 0, 10);
+    getDataMerkAct(ketmerk, 0, 10);
     setPage(1);
   };
 
   const lastPage = () => {
-    dataCount = countlok - (countlok % 10);
-    limitPage = Math.ceil(countlok / 10);
+    dataCount = countmerk - (countmerk % 10);
+    limitPage = Math.ceil(countmerk / 10);
 
     setLimitQuery(dataCount);
-    getDataLokAct(ketlok, countlok - (countlok % 10), 10);
+    getDataMerkAct(ketmerk, countmerk - (countmerk % 10), 10);
     setPage(limitPage);
   };
 
   const loadingDatas = () => {
     setLoadingData(false);
-    getCountLokAct(ketlok);
-    getDataLokAct(ketlok, 0, 10);
+    getCountMerkAct(ketmerk);
+    getDataMerkAct(ketmerk, 0, 10);
     setNoData("");
     setPage(1);
     setTimeout(() => {
@@ -293,7 +283,7 @@ export function Lokasi() {
     <div style={{ paddingLeft: 20, paddingRight: 20, marginTop: "80px" }}>
       <Breadcrumb>
         <Breadcrumb.Item href="/home">Dashboard</Breadcrumb.Item>
-        <Breadcrumb.Item active>Lokasi</Breadcrumb.Item>
+        <Breadcrumb.Item active>Merek</Breadcrumb.Item>
       </Breadcrumb>
       <ButtonToolbar
         className="justify-content-between mb-3"
@@ -307,10 +297,10 @@ export function Lokasi() {
         <InputGroup>
           <Form.Control
             type="text"
-            placeholder="Cari Lokasi [Enter]"
+            placeholder="Cari Merek [Enter]"
             aria-label="Input group example"
             aria-describedby="btnGroupAddon2"
-            onChange={(mytext) => setKetLok(mytext.target.value)}
+            onChange={(mytext) => setKetmerk(mytext.target.value)}
             onKeyUp={(event: { key: string }) => {
               if (event.key === "Enter") {
                 loadingDatas();
@@ -330,23 +320,23 @@ export function Lokasi() {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            {kodelok === "" ? "Tambah" : "Detail"} Lokasi
+            {kodemerk === "" ? "Tambah" : "Detail"} Merk
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group className="mb-3" controlId="kodelokasi">
-              <Form.Label>Kode Lokasi</Form.Label>
+            <Form.Group className="mb-3" controlId="kodemerk">
+              <Form.Label>Merek</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Kode Lokasi"
-                value={kodelokval}
-                onChange={(mytext) => setKodelokval(mytext.target.value)}
-                disabled={kodelok === "" ? false : true}
+                placeholder="Merek"
+                value={kodemerkval}
+                onChange={(mytext) => setKodemerkval(mytext.target.value)}
+                disabled={kodemerk === "" ? false : true}
               />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="keteranganlokasi">
-              <Form.Label>Keterangan Lokasi</Form.Label>
+            <Form.Group className="mb-3" controlId="keterangangudang">
+              <Form.Label>Keterangan Merek</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Keterangan"
@@ -360,7 +350,7 @@ export function Lokasi() {
           <Button variant="secondary" onClick={handleClose}>
             Tutup
           </Button>
-          <Button variant="primary" onClick={() => saveLok()}>
+          <Button variant="primary" onClick={() => saveMerk()}>
             <Spinner
               as="span"
               animation="border"
@@ -369,11 +359,11 @@ export function Lokasi() {
               aria-hidden="true"
               hidden={loadSave}
             />{" "}
-            {kodelok === "" ? <FaRegSave /> : <FaEdit />}
-            {kodelok === "" ? " Simpan" : " Simpan Edit"}
+            {kodemerk === "" ? <FaRegSave /> : <FaEdit />}
+            {kodemerk === "" ? " Simpan" : " Simpan Edit"}
           </Button>
-          {kodelok != "" ? (
-            <Button variant="danger" onClick={() => deleteLokAct()}>
+          {kodemerk != "" ? (
+            <Button variant="danger" onClick={() => deleteMerkAct()}>
               <Spinner
                 as="span"
                 animation="border"
@@ -391,10 +381,10 @@ export function Lokasi() {
       </Modal>
       <Card style={{ width: "100%" }}>
         <Card.Header>
-          <b> Lokasi </b>
+          <b> Merek </b>
         </Card.Header>
         <ListGroup variant="flush">
-          {lokasi?.length < 1 ? (
+          {merk?.length < 1 ? (
             <div
               style={{
                 display: "flex",
@@ -414,14 +404,14 @@ export function Lokasi() {
               <span>{noData}</span>
             </div>
           ) : (
-            lokasi?.map((item, i) => {
+            merk?.map((item, i) => {
               return (
                 <div key={i}>
                   <ListGroup.Item
-                    onDoubleClick={() => getDetailLokAct(item["Lokasi"])}
+                    onDoubleClick={() => getDetailMerkAct(item["Merek"])}
                     style={{ cursor: "pointer" }}
                   >
-                    {i + 1 + ". " + item["Lokasi"]}
+                    {i + 1 + ". " + item["Merek"]}
                   </ListGroup.Item>
                 </div>
               );
@@ -433,7 +423,7 @@ export function Lokasi() {
         <span>
           <small>
             <i>
-              Total Data : <strong>{countlok}</strong>
+              Total Data : <strong>{countmerk}</strong>
             </i>
           </small>
         </span>
