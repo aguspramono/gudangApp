@@ -112,13 +112,13 @@ function Header() {
                   title="Data Master"
                   id={`offcanvasNavbarDropdown-expand-sm`}
                 >
-                  <NavDropdown.Item href="#action3">
+                  <NavDropdown.Item href="/stockdistribusi">
                     <FaAngleRight /> Setup Stock Distribusi
                   </NavDropdown.Item>
                   <NavDropdown.Item href="/merek">
                     <FaAngleRight /> Setup Merek Barang
                   </NavDropdown.Item>
-                  <NavDropdown.Item href="#action5">
+                  <NavDropdown.Item href="/kategori">
                     <FaAngleRight /> Setup Kategori Barang
                   </NavDropdown.Item>
                   <NavDropdown.Item href="/gudang">

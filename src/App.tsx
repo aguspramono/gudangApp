@@ -7,6 +7,7 @@ import { Lokasi } from "./pages/Lokasi.tsx";
 import { Satuan } from "./pages/Satuan.tsx";
 import { Gudang } from "./pages/Gudang.tsx";
 import { Merk } from "./pages/Merk.tsx";
+import { Kategori } from "./pages/Kategori.tsx";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/satuan" element={<Satuan />}></Route>
           <Route path="/gudang" element={<Gudang />}></Route>
           <Route path="/merek" element={<Merk />}></Route>
+          <Route path="/kategori" element={<Kategori />}></Route>
         </Routes>
       </div>
     </BrowserRouter>
