@@ -20,6 +20,7 @@ import {
   FaRegSave,
   FaEdit,
   FaRegTrashAlt,
+  FaCaretDown,
 } from "react-icons/fa";
 
 import {
@@ -457,58 +458,52 @@ export function Supplier() {
           )}
         </Modal.Footer>
       </Modal>
-      <Card style={{ width: "100%" }}>
-        <Card.Header>
-          <b> Nama Supplier </b>
-        </Card.Header>
-        <ListGroup variant="flush">
-          {supplier?.length < 1 ? (
+      {supplier?.length < 1 ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            paddingTop: "20px",
+            paddingBottom: "20px",
+          }}
+        >
+          <Spinner
+            animation="border"
+            role="status"
+            variant="primary"
+            hidden={loadingData}
+          >
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+          <span>{noData}</span>
+        </div>
+      ) : (
+        supplier?.map((item, i) => {
+          return (
             <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                paddingTop: "20px",
-                paddingBottom: "20px",
-              }}
+              className="card"
+              key={i}
+              style={{ cursor: "pointer", marginTop: 5 }}
             >
-              <Spinner
-                animation="border"
-                role="status"
-                variant="primary"
-                hidden={loadingData}
-              >
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
-              <span>{noData}</span>
+              <div className="card-body p-0 p-2 d-flex justify-content-between">
+                <span>{i + 1 + ". " + item["Nama"]}</span>
+                <Button variant="primary" className="btn-sm">
+                  {" "}
+                  <FaCaretDown
+                    onClick={() => getDataSupplierById(item["sNo_Acc"])}
+                  />
+                </Button>
+              </div>
             </div>
-          ) : (
-            supplier?.map((item, i) => {
-              return (
-                <div key={i}>
-                  <ListGroup.Item
-                    onDoubleClick={() => getDataSupplierById(item["sNo_Acc"])}
-                    style={{ cursor: "pointer" }}
-                  >
-                    {i + 1 + ". " + item["Nama"]}
-                  </ListGroup.Item>
-                </div>
-              );
-            })
-          )}
-        </ListGroup>
-      </Card>
+          );
+        })
+      )}
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <span>
           <small>
             <i>
               Total Data : <strong>{suppliernoFilter}</strong>
             </i>
-          </small>
-        </span>
-
-        <span>
-          <small>
-            <i>klik 2x data untuk detail</i>
           </small>
         </span>
       </div>

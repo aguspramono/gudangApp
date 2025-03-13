@@ -20,6 +20,7 @@ import {
   FaRegSave,
   FaEdit,
   FaRegTrashAlt,
+  FaCaretDown,
 } from "react-icons/fa";
 
 import {
@@ -401,60 +402,53 @@ export function Departemen() {
           )}
         </Modal.Footer>
       </Modal>
-      <Card style={{ width: "100%" }}>
-        <Card.Header>
-          <b> Departemen </b>
-        </Card.Header>
-        <ListGroup variant="flush">
-          {departemen?.length < 1 ? (
+
+      {departemen?.length < 1 ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            paddingTop: "20px",
+            paddingBottom: "20px",
+          }}
+        >
+          <Spinner
+            animation="border"
+            role="status"
+            variant="primary"
+            hidden={loadingData}
+          >
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+          <span>{noData}</span>
+        </div>
+      ) : (
+        departemen?.map((item, i) => {
+          return (
             <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                paddingTop: "20px",
-                paddingBottom: "20px",
-              }}
+              className="card"
+              key={i}
+              style={{ cursor: "pointer", marginTop: 5 }}
             >
-              <Spinner
-                animation="border"
-                role="status"
-                variant="primary"
-                hidden={loadingData}
-              >
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
-              <span>{noData}</span>
+              <div className="card-body p-0 p-2 d-flex justify-content-between">
+                <span>{i + 1 + ". " + item["Keterangan"]}</span>
+                <Button variant="primary" className="btn-sm">
+                  {" "}
+                  <FaCaretDown
+                    onClick={() => getDetailDepartemenAct(item["Departemen"])}
+                  />
+                </Button>
+              </div>
             </div>
-          ) : (
-            departemen?.map((item, i) => {
-              return (
-                <div key={i}>
-                  <ListGroup.Item
-                    onDoubleClick={() =>
-                      getDetailDepartemenAct(item["Departemen"])
-                    }
-                    style={{ cursor: "pointer" }}
-                  >
-                    {i + 1 + ". " + item["Keterangan"]}
-                  </ListGroup.Item>
-                </div>
-              );
-            })
-          )}
-        </ListGroup>
-      </Card>
+          );
+        })
+      )}
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <span>
           <small>
             <i>
               Total Data : <strong>{countdepart}</strong>
             </i>
-          </small>
-        </span>
-
-        <span>
-          <small>
-            <i>klik 2x data untuk detail</i>
           </small>
         </span>
       </div>

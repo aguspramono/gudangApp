@@ -20,6 +20,7 @@ import {
   FaRegSave,
   FaEdit,
   FaRegTrashAlt,
+  FaCaretDown,
 } from "react-icons/fa";
 
 import {
@@ -59,7 +60,7 @@ export function Kategori() {
   const [knoakunstock, setKnoakunstock] = useState("");
   const [anoakunbiaya, setAnoakunbiaya] = useState("");
   const [anoakunstock, setAnoakunstock] = useState("");
-  const [keteranganval, setKeteranganval] = useState("");
+  //const [keteranganval, setKeteranganval] = useState("");
 
   let limitPage = 0;
   let nextPageAct = 0;
@@ -76,7 +77,7 @@ export function Kategori() {
     setKnoakunstock("");
     setAnoakunbiaya("");
     setAnoakunstock("");
-    setKeteranganval("");
+    //setKeteranganval("");
   };
 
   async function deleteKategoriAct() {
@@ -143,7 +144,7 @@ export function Kategori() {
       setKnoakunstock(item.k_NoAkunStock);
       setAnoakunbiaya(item.a_NoAkunBiaya);
       setAnoakunstock(item.a_NoAkunStock);
-      setKeteranganval(item.Keterangan);
+      //setKeteranganval(item.Keterangan);
     });
 
     handleShow();
@@ -491,58 +492,53 @@ export function Kategori() {
           )}
         </Modal.Footer>
       </Modal>
-      <Card style={{ width: "100%" }}>
-        <Card.Header>
-          <b> Kategori </b>
-        </Card.Header>
-        <ListGroup variant="flush">
-          {kategori?.length < 1 ? (
+
+      {kategori?.length < 1 ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            paddingTop: "20px",
+            paddingBottom: "20px",
+          }}
+        >
+          <Spinner
+            animation="border"
+            role="status"
+            variant="primary"
+            hidden={loadingData}
+          >
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+          <span>{noData}</span>
+        </div>
+      ) : (
+        kategori?.map((item, i) => {
+          return (
             <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                paddingTop: "20px",
-                paddingBottom: "20px",
-              }}
+              className="card"
+              key={i}
+              style={{ cursor: "pointer", marginTop: 5 }}
             >
-              <Spinner
-                animation="border"
-                role="status"
-                variant="primary"
-                hidden={loadingData}
-              >
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
-              <span>{noData}</span>
+              <div className="card-body p-0 p-2 d-flex justify-content-between">
+                <span>{i + 1 + ". " + item["Kategori"]}</span>
+                <Button variant="primary" className="btn-sm">
+                  {" "}
+                  <FaCaretDown
+                    onClick={() => getDetailKategoriAct(item["Kategori"])}
+                  />
+                </Button>
+              </div>
             </div>
-          ) : (
-            kategori?.map((item, i) => {
-              return (
-                <div key={i}>
-                  <ListGroup.Item
-                    onDoubleClick={() => getDetailKategoriAct(item["Kategori"])}
-                    style={{ cursor: "pointer" }}
-                  >
-                    {i + 1 + ". " + item["Kategori"]}
-                  </ListGroup.Item>
-                </div>
-              );
-            })
-          )}
-        </ListGroup>
-      </Card>
+          );
+        })
+      )}
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <span>
           <small>
             <i>
               Total Data : <strong>{countkategori}</strong>
             </i>
-          </small>
-        </span>
-
-        <span>
-          <small>
-            <i>klik 2x data untuk detail</i>
           </small>
         </span>
       </div>
