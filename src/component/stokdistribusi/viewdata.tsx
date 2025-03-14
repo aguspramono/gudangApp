@@ -191,7 +191,7 @@ export function Viewdata() {
                 style={{ cursor: "pointer", marginTop: 5 }}
               >
                 <div className="card-body p-0 p-2 d-flex justify-content-between">
-                  <span>{i + 1 + ". " + item["Gudang"]}</span>
+                  <span>{item["Gudang"]}</span>
                   <Button variant="primary" className="btn-sm">
                     {" "}
                     <FaCaretDown
@@ -211,7 +211,6 @@ export function Viewdata() {
         <Table responsive striped bordered hover>
           <thead>
             <tr>
-              <th>#</th>
               <th>Gudang</th>
               <th>Saldo</th>
               <th>Beli</th>
@@ -240,7 +239,6 @@ export function Viewdata() {
               stokdistribusi?.map((item, i) => {
                 return (
                   <tr key={i}>
-                    <td>{i + 1}</td>
                     <td>{item["Gudang"]}</td>
                     <td>{item["sAwal"]}</td>
                     <td>{item["Beli"]}</td>

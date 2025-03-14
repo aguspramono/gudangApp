@@ -6,7 +6,21 @@ const headers = {
   "Content-Type": "multipart/form-data",
 };
 
-  
+  export const getAllMerk = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}merk/all`,{
+          headers:headers
+        }
+      );
+
+      return response.data.datamerk;
+    } catch (error) {
+      return error;
+    }
+  };  
+
+
   export const getMerkCount = async (wherelike:string) => {
     try {
       const response = await axios.get(

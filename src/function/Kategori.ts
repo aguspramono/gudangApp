@@ -21,6 +21,20 @@ const headers = {
     }
   };
 
+  export const getDataKategori = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}kategori/all`,{
+          headers:headers
+        }
+      );
+
+      return response.data.datakategori;
+    } catch (error) {
+      return error;
+    }
+  };
+
   export const getDetailKategori = async (wherelike:string) => {
     try {
       const response = await axios.get(

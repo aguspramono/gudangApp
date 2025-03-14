@@ -21,6 +21,20 @@ const headers = {
     }
   };
 
+  export const getDataallsatuan = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}satuan/all`,{
+          headers:headers
+        }
+      );
+
+      return response.data.datasatuan;
+    } catch (error) {
+      return error;
+    }
+  };
+
   export const getDetailSatuan = async (wherelike:string) => {
     try {
       const response = await axios.get(

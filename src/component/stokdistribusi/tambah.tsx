@@ -12,26 +12,39 @@ import {
 } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import Select from "react-select";
-import {
-  FaFile,
-  FaFileMedical,
-  FaSearch,
-  FaPrint,
-  FaEdit,
-} from "react-icons/fa";
+import { FaFile, FaSearch, FaPrint, FaEdit } from "react-icons/fa";
+
+import { Optionmerkbarang } from "./../global/optionmerekbarang";
+import { Optionkategoribarang } from "./../global/optionkategoribarang";
+import { Optionsatuanbarang } from "./../global/optionsatuanbarang";
+import { Viewdataproduk } from "./../global/databarang";
 
 export function Createdata() {
-  const options = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
-  ];
-  const [selectedOption, setSelectedOption] = useState(null);
   const [show, setShow] = useState(false);
+  const [showproduk, setShowproduk] = useState(false);
+
+  //set variable save
+
   const handleClose = () => {
     setShow(false);
   };
+  const handleCloseProduk = () => {
+    setShowproduk(false);
+  };
   const handleShow = () => setShow(true);
+  const handleShowProduk = () => setShowproduk(true);
+
+  const handleMerk = (e: any) => {
+    console.log(e);
+  };
+
+  const handlekategori = (e: any) => {
+    console.log(e);
+  };
+
+  const handlesatuan = (e: any) => {
+    console.log(e);
+  };
 
   return (
     <div>
@@ -71,13 +84,14 @@ export function Createdata() {
               <FaEdit /> Rename
             </Button>
           </ButtonGroup>
+
           <Form>
             <Form.Label>
               Kode Barang <span className="text-danger">*)</span>
             </Form.Label>
             <InputGroup>
               <Form.Control aria-label="Kode Barang" />
-              <Button variant="outline-secondary">
+              <Button variant="outline-secondary" onClick={handleShowProduk}>
                 <FaSearch />
               </Button>
               <Button variant="outline-secondary">
@@ -96,11 +110,7 @@ export function Createdata() {
               <Form.Label>
                 Merek Barang <span className="text-danger">*)</span>
               </Form.Label>
-              <Select
-                defaultValue={selectedOption}
-                onChange={() => setSelectedOption}
-                options={options}
-              />
+              <Optionmerkbarang onChange={handleMerk} />
             </Form.Group>
 
             <Row className="mt-2">
@@ -108,22 +118,14 @@ export function Createdata() {
                 <Form.Label>
                   Kategori Barang <span className="text-danger">*)</span>
                 </Form.Label>
-                <Select
-                  defaultValue={selectedOption}
-                  onChange={() => setSelectedOption}
-                  options={options}
-                />
+                <Optionkategoribarang onChange={handlekategori} />
               </Form.Group>
 
               <Form.Group as={Col} className="mt-2" controlId="perkiraanbiayad">
                 <Form.Label>
                   Satuan <span className="text-danger">*)</span>
                 </Form.Label>
-                <Select
-                  defaultValue={selectedOption}
-                  onChange={() => setSelectedOption}
-                  options={options}
-                />
+                <Optionsatuanbarang onChange={handlesatuan} />
               </Form.Group>
             </Row>
 
@@ -174,6 +176,26 @@ export function Createdata() {
             </Button>
           </div>
         </Modal.Footer>
+      </Modal>
+
+      <Modal
+        size="lg"
+        animation={false}
+        show={showproduk}
+        onHide={handleCloseProduk}
+        backdrop="static"
+        keyboard={false}
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Pencarian Product / Barang
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Viewdataproduk />
+        </Modal.Body>
       </Modal>
     </div>
   );
