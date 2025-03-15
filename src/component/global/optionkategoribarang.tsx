@@ -14,7 +14,7 @@ export const Optionkategoribarang = (props: any) => {
     setKategori(kategoridata);
   }
 
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOption, setSelectedOption] = useState("ALAT LISTRIK");
 
   const handleChange = (event: any) => {
     props.onChange(event.value);
@@ -31,6 +31,10 @@ export const Optionkategoribarang = (props: any) => {
         defaultValue={selectedOption}
         onChange={handleChange}
         options={kategori}
+        placeholder={"Pilih Kategori"}
+        value={kategori.filter(function (option: any) {
+          return option.value === props.state;
+        })}
       />
     </div>
   );

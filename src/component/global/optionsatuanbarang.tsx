@@ -31,6 +31,10 @@ export const Optionsatuanbarang = (props: any) => {
         defaultValue={selectedOption}
         onChange={handleChange}
         options={satuan}
+        placeholder={"Pilih Satuan"}
+        value={satuan.filter(function (option: any) {
+          return option.value === props.state;
+        })}
       />
     </div>
   );

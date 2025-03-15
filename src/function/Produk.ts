@@ -32,3 +32,70 @@ export const getProduk = async (wherelike:string,pageprev:number,page:number,opt
       return error;
     }
   };
+
+
+  export const getProdukById = async (id:string) => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}product/detail?id=${id}`,{
+          headers:headers
+        }
+      );
+
+      return response.data.dataproduct;
+    } catch (error) {
+      return error;
+    }
+  };
+
+  export const createProduct = async (Kode:string,Nama:string,Merek:string,Kategori:string,Satuan:string,Spec:string,Lokasi:string,Min:number,Max:number,TglUbah= new Date(),Username:string,Showing:number) => {
+    try {
+      var postData = {
+        Kode:Kode,
+        Nama: Nama,
+        Merek:Merek,
+        Kategori: Kategori,
+        Satuan:Satuan,
+        Spec:Spec,
+        Lokasi:Lokasi,
+        Min:Min,
+        Max:Max,
+        TglUbah:TglUbah,
+        Username:Username,
+        Showing:Showing
+      };
+
+      const response = await axios.post(
+        `${baseUrl}product/save`,postData, {headers:headers});
+
+      return response.data;
+    } catch (error) {
+      return error;
+    }
+  };
+
+
+  export const updateProduct = async (Kode:string,Nama:string,Merek:string,Kategori:string,Satuan:string,Spec:string,Lokasi:string,Min:number,Max:number,TglUbah= new Date(),Username:string,Showing:number) => {
+    try {
+      var postData = {
+        Nama: Nama,
+        Merek:Merek,
+        Kategori: Kategori,
+        Satuan:Satuan,
+        Spec:Spec,
+        Lokasi:Lokasi,
+        Min:Min,
+        Max:Max,
+        TglUbah:TglUbah,
+        Username:Username,
+        Showing:Showing
+      };
+
+      const response = await axios.post(
+        `${baseUrl}product/update/${Kode}`,postData, {headers:headers});
+
+      return response.data;
+    } catch (error) {
+      return error;
+    }
+  };

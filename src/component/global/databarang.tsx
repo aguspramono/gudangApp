@@ -4,8 +4,6 @@ import {
   Button,
   ButtonGroup,
   InputGroup,
-  DropdownButton,
-  Dropdown,
   Form,
 } from "react-bootstrap";
 import Select from "react-select";
@@ -20,7 +18,11 @@ import {
   FaCheckSquare,
 } from "react-icons/fa";
 
-import { getProduk, getProdukCount } from "./../../function/Produk";
+import {
+  getProduk,
+  getProdukCount,
+  getProdukById,
+} from "./../../function/Produk";
 
 export function Viewdataproduk(props: any) {
   const [produk, setProduk] = useState([]);
@@ -41,8 +43,9 @@ export function Viewdataproduk(props: any) {
   const [noData, setNoData] = useState("");
   const [loadingData, setLoadingData] = useState(false);
 
-  const handleDetailBarang = (event: any) => {
-    console.log(event);
+  const handleDetailBarang = async (event: any) => {
+    const response = await getProdukById(event);
+    props.onClick(response);
   };
 
   let limitPage = 0;
@@ -243,7 +246,7 @@ export function Viewdataproduk(props: any) {
                       <Button
                         variant="light"
                         className="btn-sm text-primary"
-                        onClick={handleDetailBarang}
+                        onClick={() => handleDetailBarang(item["Kode"])}
                       >
                         <FaCheckSquare />
                       </Button>
