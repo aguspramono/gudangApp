@@ -21,6 +21,20 @@ const headers = {
     }
   };
 
+  export const getAllDataGudang = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}gudang/alldata`,{
+          headers:headers
+        }
+      );
+
+      return response.data.datagudang;
+    } catch (error) {
+      return error;
+    }
+  };
+
   export const getDetailGudang = async (wherelike:string) => {
     try {
       const response = await axios.get(

@@ -1,6 +1,5 @@
 import {
   Spinner,
-  Table,
   Button,
   Modal,
   Form,
@@ -18,6 +17,7 @@ import {
   FaEdit,
   FaRegSave,
   FaTrash,
+  FaSave,
 } from "react-icons/fa";
 import { createMessage, createMessageConfirm } from "./../../function/Alert";
 import { Optionmerkbarang } from "./../global/optionmerekbarang";
@@ -30,7 +30,11 @@ import { createProductDetail } from "./../../function/Produkdetail";
 export function Createdata() {
   const [show, setShow] = useState(false);
   const [showproduk, setShowproduk] = useState(false);
+  const [showrename, setShowRename] = useState(false);
   const [loadSave, setLoadSave] = useState(true);
+
+  const [kodebaranglama, setKodeBarangLama] = useState("");
+  const [kodebarangbaru, setKodeBarangBaru] = useState("");
 
   //set variable save
   const [kodebarangprimary, setKodeBarangPrimary] = useState("");
@@ -48,11 +52,18 @@ export function Createdata() {
   const handleClose = () => {
     setShow(false);
   };
+
   const handleCloseProduk = () => {
     setShowproduk(false);
   };
+
+  const handleCloseRename = () => {
+    setShowRename(false);
+  };
+
   const handleShow = () => setShow(true);
   const handleShowProduk = () => setShowproduk(true);
+  const handleShowRename = () => setShowRename(true);
 
   const handleMerk = (e: any) => {
     setMerekBarang(e);
@@ -153,11 +164,7 @@ export function Createdata() {
         showingbarang
       );
 
-      // await createProductDetail(
-      //   kodebarang,
-      //   namabarang,
-      //   0
-      // )
+      await createProductDetail(kodebarang);
 
       if (response["message"] == "success") {
         createMessage("Success", "Barang berhasil disimpan", "success").then(
@@ -213,6 +220,10 @@ export function Createdata() {
     });
   };
 
+  const ubahKode = () => {
+    console.log("Aasasdasd");
+  };
+
   const proseUpdateDataProduct = () => {
     if (kodebarangprimary === "") {
       simpanProduct();
@@ -258,7 +269,7 @@ export function Createdata() {
             <Button variant="light">
               <FaPrint /> Print
             </Button>
-            <Button variant="light">
+            <Button variant="light" onClick={handleShowRename}>
               <FaEdit /> Rename
             </Button>
           </ButtonGroup>
@@ -429,6 +440,55 @@ export function Createdata() {
         </Modal.Header>
         <Modal.Body>
           <Viewdataproduk onClick={handleProductDetail} />
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        animation={false}
+        show={showrename}
+        onHide={handleCloseRename}
+        backdrop="static"
+        keyboard={false}
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        className="bg-secondary"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Ubah kode Produk
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mt-2" controlId="perkiraanbiayad">
+              <Form.Label>
+                Kode Barang <span className="text-danger">*)</span>
+              </Form.Label>
+              <Form.Control
+                type="text"
+                value={kodebaranglama}
+                onChange={(mytext) => setKodeBarangLama(mytext.target.value)}
+                className="mb-3"
+              />
+            </Form.Group>
+
+            <Form.Label>
+              Kode Barang Baru <span className="text-danger">*)</span>
+            </Form.Label>
+            <InputGroup>
+              <Form.Control
+                aria-label="Kode Barang"
+                type="text"
+                value={kodebarangbaru}
+                onChange={(mytext) => setKodeBarangBaru(mytext.target.value)}
+              />
+
+              <Button variant="outline-secondary" onClick={ubahKode}>
+                <FaSave />
+                {" Ubah Kode"}
+              </Button>
+            </InputGroup>
+          </Form>
         </Modal.Body>
       </Modal>
     </div>

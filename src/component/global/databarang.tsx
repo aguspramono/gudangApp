@@ -195,7 +195,7 @@ export function Viewdataproduk(props: any) {
                   <Button
                     variant="light"
                     className="btn-sm text-primary"
-                    onClick={() => {}}
+                    onClick={() => handleDetailBarang(item["Kode"])}
                   >
                     <FaCheckSquare />
                   </Button>

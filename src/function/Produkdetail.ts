@@ -7,16 +7,12 @@ const headers = {
 };
 
 
-export const createProductDetail = async (Kode:string,Gudang:string,sAwal:number) => {
+export const createProductDetail = async (Kode:string) => {
     try {
-      var postData = {
-        Kode:Kode,
-        Gudang: Gudang,
-        sAwal:sAwal,
-      };
+      var postData = {};
 
       const response = await axios.post(
-        `${baseUrl}productdetail/save`,postData, {headers:headers});
+        `${baseUrl}productdetail/save/${Kode}`,postData, {headers:headers});
 
       return response.data;
     } catch (error) {
