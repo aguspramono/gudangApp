@@ -7,46 +7,45 @@ const headers = {
 };
 
 export const getProduk = async (wherelike:string,pageprev:number,page:number,option:string) => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}product?like=${wherelike}&pageprev=${pageprev}&page=${page}&option=${option}`,{headers:headers}
-      );
+  try {
+    const response = await axios.get(
+      `${baseUrl}product?like=${wherelike}&pageprev=${pageprev}&page=${page}&option=${option}`,{headers:headers}
+    );
 
-      return response.data.dataproduct;
-    } catch (error) {
-      return error;
-    }
-  };
+    return response.data.dataproduct;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getProdukCount = async (wherelike:string,option:string) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}product/datacount?like=${wherelike}&option=${option}`,{
+        headers:headers
+      }
+    );
+
+    return response.data.countproduct;
+  } catch (error) {
+    return error;
+  }
+};
 
 
-  export const getProdukCount = async (wherelike:string,option:string) => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}product/datacount?like=${wherelike}&option=${option}`,{
-          headers:headers
-        }
-      );
+export const getProdukById = async (id:string) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}product/detail?id=${id}`,{
+        headers:headers
+      }
+    );
 
-      return response.data.countproduct;
-    } catch (error) {
-      return error;
-    }
-  };
-
-
-  export const getProdukById = async (id:string) => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}product/detail?id=${id}`,{
-          headers:headers
-        }
-      );
-
-      return response.data.dataproduct;
-    } catch (error) {
-      return error;
-    }
-  };
+    return response.data.dataproduct;
+  } catch (error) {
+    return error;
+  }
+};
 
   export const createProduct = async (Kode:string,Nama:string,Merek:string,Kategori:string,Satuan:string,Spec:string,Lokasi:string,Min:number,Max:number,TglUbah= new Date(),Username:string,Showing:number) => {
     try {
@@ -93,6 +92,22 @@ export const getProduk = async (wherelike:string,pageprev:number,page:number,opt
 
       const response = await axios.post(
         `${baseUrl}product/update/${Kode}`,postData, {headers:headers});
+
+      return response.data;
+    } catch (error) {
+      return error;
+    }
+  };
+
+
+  export const deleteProduk = async (kode:string) => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}product/delete?id=${kode}`,
+        {
+          headers: headers,
+        }
+      );
 
       return response.data;
     } catch (error) {

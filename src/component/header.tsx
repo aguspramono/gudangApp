@@ -6,11 +6,59 @@ import {
   Offcanvas,
 } from "react-bootstrap";
 import { FaAngleRight, FaArtstation } from "react-icons/fa";
+import { getPeriode, updatePeriode } from "./../function/Periode";
+import { createMessage, createMessageConfirm } from "./../function/Alert";
+import { Pindahsaldo } from "./../pages/Pindahsaldo";
+import { useState, useEffect } from "react";
 
 function Header() {
+  const [showmodal, setShowModal] = useState(false);
+  const reopenperiode = async () => {
+    const cekperiode = await getPeriode();
+    if (cekperiode?.length > 0) {
+      createMessageConfirm(
+        "Peringatan",
+        "Yakin Periode : " +
+          cekperiode[0]["Periode"] +
+          " dari " +
+          cekperiode[0]["Tgl"] +
+          " s/d " +
+          cekperiode[0]["Tgl1"] +
+          " akan diaktifkan kembali?",
+        "question",
+        "Ya, Aktifkan",
+        "Batal"
+      ).then(async (result) => {
+        if (result == "confirmed") {
+          const updateperiode = await updatePeriode(
+            parseInt(cekperiode[0]["Periode"])
+          );
+
+          if (updateperiode["message"] == "success") {
+            createMessage(
+              "Success",
+              "Proses Re-Open Periode Selesai",
+              "success"
+            ).then(() => {});
+          } else {
+            createMessage("Error", "Terjadi kesalahan", "error").then(() => {});
+          }
+        }
+      });
+    }
+  };
+
+  const handleShowPindahSaldo = () => {
+    setShowModal(true);
+  };
+
+  const handleHideModal = () => {
+    setShowModal(false);
+  };
+
   return (
     <div>
-      <Navbar expand="sm" className="bg-white shadow mb-3 fixed-top">
+      <Navbar expand="sm" className="bg-white shadow fixed-top mb-3">
         <Container fluid>
           <Navbar.Brand href="/home">
             <FaArtstation /> <span style={{ fontWeight: "bold" }}>GDG</span>
@@ -27,7 +75,7 @@ function Header() {
               </Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
-              <Nav className="justify-content-start flex-grow-1 pe-3">
+              <Nav className="flex-grow-1 justify-content-start pe-3">
                 <NavDropdown
                   title="Transaksi"
                   id={`offcanvasNavbarDropdown-expand-sm`}
@@ -139,8 +187,22 @@ function Header() {
                     <FaAngleRight /> Setup Departemen
                   </NavDropdown.Item>
                   <NavDropdown.Divider />
-                  <NavDropdown.Item href="#action6">
+                  <NavDropdown.Item onClick={() => handleShowPindahSaldo()}>
                     <FaAngleRight /> Pindah Saldo Persediaan
+                  </NavDropdown.Item>
+                  <NavDropdown.Item
+                    onClick={() =>
+                      createMessage(
+                        "Info",
+                        "Fitur Belum Tersedia",
+                        "info"
+                      ).then(() => {})
+                    }
+                  >
+                    <FaAngleRight /> Reupdate HPP (Mutasi & Adjustment)
+                  </NavDropdown.Item>
+                  <NavDropdown.Item onClick={() => reopenperiode()}>
+                    <FaAngleRight /> Reopen Periode
                   </NavDropdown.Item>
                 </NavDropdown>
               </Nav>
@@ -157,6 +219,7 @@ function Header() {
           </Navbar.Offcanvas>
         </Container>
       </Navbar>
+      <Pindahsaldo show={showmodal} onHide={handleHideModal} />
     </div>
   );
 }

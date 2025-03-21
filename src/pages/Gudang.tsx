@@ -407,7 +407,7 @@ export function Gudang() {
               key={i}
               style={{ cursor: "pointer", marginTop: 5 }}
             >
-              <div className="card-body p-0 p-2 d-flex justify-content-between">
+              <div className="d-flex card-body justify-content-between p-0 p-2">
                 <span>{i + 1 + ". " + item["Gudang"]}</span>
                 <Button variant="primary" className="btn-sm">
                   {" "}

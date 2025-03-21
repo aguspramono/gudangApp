@@ -24,7 +24,12 @@ import { Optionmerkbarang } from "./../global/optionmerekbarang";
 import { Optionkategoribarang } from "./../global/optionkategoribarang";
 import { Optionsatuanbarang } from "./../global/optionsatuanbarang";
 import { Viewdataproduk } from "./../global/databarang";
-import { createProduct, updateProduct } from "./../../function/Produk";
+import {
+  createProduct,
+  updateProduct,
+  getProdukById,
+  deleteProduk,
+} from "./../../function/Produk";
 import { createProductDetail } from "./../../function/Produkdetail";
 
 export function Createdata() {
@@ -32,6 +37,7 @@ export function Createdata() {
   const [showproduk, setShowproduk] = useState(false);
   const [showrename, setShowRename] = useState(false);
   const [loadSave, setLoadSave] = useState(true);
+  const [loadDelete, setLoadDelete] = useState(true);
 
   const [kodebaranglama, setKodeBarangLama] = useState("");
   const [kodebarangbaru, setKodeBarangBaru] = useState("");
@@ -52,18 +58,21 @@ export function Createdata() {
   const handleClose = () => {
     setShow(false);
   };
+  const handleShow = () => setShow(true);
 
   const handleCloseProduk = () => {
     setShowproduk(false);
   };
+  const handleShowProduk = () => setShowproduk(true);
 
   const handleCloseRename = () => {
     setShowRename(false);
   };
-
-  const handleShow = () => setShow(true);
-  const handleShowProduk = () => setShowproduk(true);
-  const handleShowRename = () => setShowRename(true);
+  const handleShowRename = () => {
+    createMessage("Error", "Fitur ini dinonaktifkan", "error").then(() => {});
+    return;
+    setShowRename(true);
+  };
 
   const handleMerk = (e: any) => {
     setMerekBarang(e);
@@ -209,19 +218,71 @@ export function Createdata() {
         if (response["message"] == "success") {
           createMessage("Success", "Barang berhasil diubah", "success").then(
             () => {
-              handleClose();
+              setLoadSave(true);
               bersih();
             }
           );
         } else {
-          createMessage("Error", "Terjadi kesalahan", "error").then(() => {});
+          createMessage("Error", "Terjadi kesalahan", "error").then(() => {
+            setLoadSave(true);
+          });
         }
       }
     });
   };
 
   const ubahKode = () => {
-    console.log("Aasasdasd");
+    //cek kode
+    if (kodebaranglama === "") {
+      createMessage("Error", "Kode lama tidak boleh kosong", "error").then(
+        () => {}
+      );
+      return;
+    }
+    if (kodebarangbaru === "") {
+      createMessage("Error", "Kode baru tidak boleh kosong", "error").then(
+        () => {}
+      );
+      return;
+    }
+
+    createMessageConfirm(
+      "Peringatan",
+      "Yakin Kode Barang (" +
+        kodebaranglama +
+        ") diganti menjadi (" +
+        kodebarangbaru +
+        "), klik batal untuk batal!",
+      "question",
+      "Ubah",
+      "Batal"
+    ).then(async (result) => {
+      if (result == "confirmed") {
+        const rescekproduk = await getProdukById(kodebarangbaru);
+        if (rescekproduk?.length > 0) {
+          //cek apakah kode ada
+          createMessageConfirm(
+            "Peringatan",
+            "Kode barang (" +
+              kodebarangbaru +
+              ") sudah ada. Proses ini akan menghapus kode (" +
+              kodebaranglama +
+              ") dan semua transaksi dipindahkan ke (" +
+              kodebarangbaru +
+              "), klik batal untuk batal!",
+            "question",
+            "Ubah",
+            "Batal"
+          ).then(async (result) => {
+            if (result == "confirmed") {
+              const rescekproduk = await getProdukById(kodebarangbaru);
+              if (rescekproduk?.length > 0) {
+              }
+            }
+          });
+        }
+      }
+    });
   };
 
   const proseUpdateDataProduct = () => {
@@ -232,6 +293,39 @@ export function Createdata() {
     }
     setTimeout(() => {
       setLoadSave(true);
+    }, 2000);
+  };
+
+  const prosesHapusData = () => {
+    createMessageConfirm(
+      "Peringatan",
+      "Yakin data ini akan dihapus, Klik batal untuk batal...!!!",
+      "question",
+      "Hapus",
+      "Batal"
+    ).then(async (result) => {
+      if (result == "confirmed") {
+        setLoadDelete(false);
+        const hapusproduk = await deleteProduk(kodebarangprimary);
+
+        if (hapusproduk["message"] == "success") {
+          createMessage("Success", "Produk berhasil dihapus", "success").then(
+            () => {
+              bersih();
+            }
+          );
+        } else {
+          createMessage(
+            "Error",
+            "Terjadi kesalahan, tidak dapat menghapus data karena data ini sudah terhubung dengan stock out detail",
+            "error"
+          ).then(() => {});
+        }
+      }
+    });
+
+    setTimeout(() => {
+      setLoadDelete(true);
     }, 2000);
   };
 
@@ -415,7 +509,15 @@ export function Createdata() {
             {kodebarangprimary === "" ? (
               ""
             ) : (
-              <Button variant="danger" onClick={handleClose}>
+              <Button variant="danger" onClick={() => prosesHapusData()}>
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                  hidden={loadDelete}
+                />{" "}
                 <FaTrash /> Hapus
               </Button>
             )}
@@ -451,7 +553,7 @@ export function Createdata() {
         keyboard={false}
         aria-labelledby="contained-modal-title-vcenter"
         centered
-        className="bg-secondary"
+        className="bg-dark bg-opacity-50"
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
@@ -462,7 +564,7 @@ export function Createdata() {
           <Form>
             <Form.Group className="mt-2" controlId="perkiraanbiayad">
               <Form.Label>
-                Kode Barang <span className="text-danger">*)</span>
+                Kode Produk <span className="text-danger">*)</span>
               </Form.Label>
               <Form.Control
                 type="text"
@@ -473,7 +575,7 @@ export function Createdata() {
             </Form.Group>
 
             <Form.Label>
-              Kode Barang Baru <span className="text-danger">*)</span>
+              Kode Produk Baru <span className="text-danger">*)</span>
             </Form.Label>
             <InputGroup>
               <Form.Control
