@@ -23,6 +23,7 @@ import {
 import { createMessage, createMessageConfirm } from "./../function/Alert";
 import { getCurrentDateInput } from "./../function/Datenow";
 import { getPeriodeAktif } from "./../function/Periode";
+import { getAktifday, updateAktifDay } from "./../function/Aktifday";
 import { format, compareAsc, nextDay } from "date-fns";
 
 export const Pindahsaldo = (props: any) => {
@@ -46,21 +47,66 @@ export const Pindahsaldo = (props: any) => {
     props.onHide(false);
   };
 
+  const getDataAktifDay = async () => {
+    const response = await getAktifday();
+    setTanggalDaily(response[0]["Tgl"]);
+  };
+
   const getPeriodeActive = async () => {
     const response = await getPeriodeAktif();
-    console.log(response);
 
     setTanggalperiodesekarangdari(response[0]["Tgl"]);
     setTanggalperiodesekarangsampai(response[0]["Tgl1"]);
 
     setPeriodesekarang(response[0]["Periode"]);
     setPeriodeberikut(parseFloat(response[0]["Periode"]) + 1);
-    console.log(getCurrentDateInput(new Date(tanggalperiodesekarangsampai)));
-    console.log(tanggalperiodesekarangsampai);
+    //console.log(getCurrentDateInput(new Date(tanggalperiodesekarangsampai)));
+    //console.log(tanggalperiodesekarangsampai);
+  };
+
+  const closingDialyAct = () => {
+    createMessageConfirm(
+      "Peringatan",
+      "Yakin proses closing day akan dilanjutkan?!",
+      "question",
+      "Ya, Lanjutkan",
+      "Batal"
+    ).then(async (result) => {
+      if (result == "confirmed") {
+        if (
+          tanggaldaily === getCurrentDateInput(new Date("0001-01-01T00:00:00Z"))
+        ) {
+          createMessage(
+            "Error",
+            "Tanggal aktif belum lengkap, periksa kembali...!!!",
+            "error"
+          );
+          return;
+        }
+
+        const response = await updateAktifDay(
+          0,
+          new Date(tanggaldaily),
+          new Date(),
+          "Admin"
+        );
+
+        if (response["message"] == "success") {
+          createMessage(
+            "Success",
+            "Proses Closing Day Berhasil.",
+            "success"
+          ).then(() => {});
+        } else {
+          createMessage("Error", "Terjadi kesalahan", "error").then(() => {});
+        }
+      }
+    });
   };
 
   useEffect(() => {
     getPeriodeActive();
+    getDataAktifDay();
   }, []);
 
   return (
@@ -93,7 +139,9 @@ export const Pindahsaldo = (props: any) => {
                 onChange={(mytext) => setTanggalDaily(mytext.target.value)}
               />
 
-              <Button variant="primary">Aktifkan</Button>
+              <Button variant="primary" onClick={() => closingDialyAct()}>
+                Aktifkan
+              </Button>
             </InputGroup>
 
             <p className="mt-4">
