@@ -80,10 +80,10 @@ function Header() {
                   title="Transaksi"
                   id={`offcanvasNavbarDropdown-expand-sm`}
                 >
-                  <NavDropdown.Item href="#action5">
+                  <NavDropdown.Item href="/pesananbarang">
                     <FaAngleRight /> Pesanan Barang
                   </NavDropdown.Item>
-                  <NavDropdown.Item href="#action5">
+                  <NavDropdown.Item href="/orderbarang">
                     <FaAngleRight /> Order Barang
                   </NavDropdown.Item>
                   <NavDropdown.Item href="#action5">

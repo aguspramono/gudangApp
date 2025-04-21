@@ -9,6 +9,8 @@ import { Gudang } from "./pages/Gudang.tsx";
 import { Merk } from "./pages/Merk.tsx";
 import { Kategori } from "./pages/Kategori.tsx";
 import { Stockdistribusi } from "./pages/Stockdistribusi.tsx";
+import { Pesananbarang } from "./pages/Pesananbarang.tsx";
+import { Orderbarang } from "./pages/Orderbarang.tsx";
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
           <Route path="/merek" element={<Merk />}></Route>
           <Route path="/kategori" element={<Kategori />}></Route>
           <Route path="/stockdistribusi" element={<Stockdistribusi />}></Route>
+          <Route path="/pesananbarang" element={<Pesananbarang />}></Route>
+          <Route path="/orderbarang" element={<Orderbarang />}></Route>
         </Routes>
       </div>
     </BrowserRouter>

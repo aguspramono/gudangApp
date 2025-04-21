@@ -50,6 +50,7 @@ export function Supplier() {
   const [limitQuery, setLimitQuery] = useState(0);
   const [nama, setNama] = useState("");
   const [noacc, setNoAcc] = useState("");
+  const [optionfilter, setoptionfilter] = useState("Nama");
 
   //useState value data
 
@@ -111,12 +112,17 @@ export function Supplier() {
     limitqueryprev: number,
     limitquery: number
   ) {
-    const response = await getSupplier(like, limitqueryprev, limitquery);
+    const response = await getSupplier(
+      like,
+      limitqueryprev,
+      limitquery,
+      optionfilter
+    );
     setSupplier(response);
   }
 
   async function getDataSupplierNoFilt(like: string) {
-    const response = await getSupplierNoFilt(like);
+    const response = await getSupplierNoFilt(like, optionfilter);
     setSuppliernoFilter(response);
   }
 

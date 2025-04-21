@@ -1,30 +1,10 @@
-import Select from "react-select";
-import {
-  Spinner,
-  Button,
-  Modal,
-  Form,
-  Row,
-  Col,
-  ButtonToolbar,
-  ButtonGroup,
-  InputGroup,
-} from "react-bootstrap";
+import { Button, Modal, Form, InputGroup } from "react-bootstrap";
 import { useState, useEffect } from "react";
-import {
-  FaFile,
-  FaSearch,
-  FaPrint,
-  FaEdit,
-  FaRegSave,
-  FaTrash,
-  FaSave,
-} from "react-icons/fa";
+
 import { createMessage, createMessageConfirm } from "./../function/Alert";
 import { getCurrentDateInput } from "./../function/Datenow";
 import { getPeriodeAktif } from "./../function/Periode";
 import { getAktifday, updateAktifDay } from "./../function/Aktifday";
-import { format, compareAsc, nextDay } from "date-fns";
 
 export const Pindahsaldo = (props: any) => {
   const [tanggaldaily, setTanggalDaily] = useState(
@@ -60,7 +40,24 @@ export const Pindahsaldo = (props: any) => {
 
     setPeriodesekarang(response[0]["Periode"]);
     setPeriodeberikut(parseFloat(response[0]["Periode"]) + 1);
-    //console.log(getCurrentDateInput(new Date(tanggalperiodesekarangsampai)));
+    setTanggalperiodeberikutdari(
+      getCurrentDateInput(
+        new Date(
+          new Date(response[0]["Tgl1"]).getFullYear(),
+          new Date(response[0]["Tgl1"]).getMonth() + 1,
+          1
+        )
+      )
+    );
+    setTanggalperiodeberikutsampai(
+      getCurrentDateInput(
+        new Date(
+          new Date(response[0]["Tgl1"]).getFullYear(),
+          new Date(response[0]["Tgl1"]).getMonth() + 2,
+          0
+        )
+      )
+    );
     //console.log(tanggalperiodesekarangsampai);
   };
 
@@ -102,6 +99,10 @@ export const Pindahsaldo = (props: any) => {
         }
       }
     });
+  };
+
+  const pindahSaldoClosinganMontly = () => {
+    console.log("Agus Pramono");
   };
 
   useEffect(() => {
@@ -208,8 +209,11 @@ export const Pindahsaldo = (props: any) => {
                 readOnly={true}
               />
             </InputGroup>
-            <div className="d-flex justify-content-end mt-2">
-              <Button>Pindahkan</Button>
+            <div
+              className="d-flex justify-content-end mt-2"
+              onClick={() => pindahSaldoClosinganMontly()}
+            >
+              <Button>Pindah</Button>
             </div>
 
             <div className="mt-2">

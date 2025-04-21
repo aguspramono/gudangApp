@@ -47,6 +47,19 @@ const headers = {
       }
     };
 
+
+    export const getDataAllDepartemen = async () => {
+      try {
+        const response = await axios.get(
+          `${baseUrl}departemen/all`,{headers:headers}
+        );
+  
+        return response.data.datadepartemen;
+      } catch (error) {
+        return error;
+      }
+    };
+
   export const createDepartemen = async (Departemen:string,Keterangan:string,TglUbah= new Date(),Username:string) => {
       try {
         var postData = {

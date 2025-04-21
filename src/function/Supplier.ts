@@ -7,10 +7,10 @@ const headers = {
 };
 
   
-  export const getSupplierNoFilt = async (wherelike:string) => {
+  export const getSupplierNoFilt = async (wherelike:string,option:string) => {
     try {
       const response = await axios.get(
-        `${baseUrl}supplier?like=${wherelike}`,{
+        `${baseUrl}supplier?like=${wherelike}&option=${option}`,{
           headers:headers
         }
       );
@@ -48,10 +48,10 @@ const headers = {
   };
 
 
-  export const getSupplier = async (wherelike:string,pageprev:number,page:number) => {
+  export const getSupplier = async (wherelike:string,pageprev:number,page:number,option:string) => {
       try {
         const response = await axios.get(
-          `${baseUrl}filtersupplier?like=${wherelike}&pageprev=${pageprev}&page=${page}`,{headers:headers}
+          `${baseUrl}filtersupplier?like=${wherelike}&pageprev=${pageprev}&page=${page}&option=${option}`,{headers:headers}
         );
   
         return response.data.datasupplier;
