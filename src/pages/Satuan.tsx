@@ -21,6 +21,7 @@ import {
   FaEdit,
   FaRegTrashAlt,
   FaCaretDown,
+  FaEye,
 } from "react-icons/fa";
 
 import {
@@ -408,12 +409,13 @@ export function Satuan() {
               style={{ cursor: "pointer", marginTop: 5 }}
             >
               <div className="card-body p-0 p-2 d-flex justify-content-between">
-                <span>{i + 1 + ". " + item["Satuan"]}</span>
-                <Button variant="primary" className="btn-sm">
-                  {" "}
-                  <FaCaretDown
-                    onClick={() => getDetailSatuanAct(item["Satuan"])}
-                  />
+                <span>{item["Satuan"]}</span>
+                <Button
+                  variant="light"
+                  className="btn-sm text-primary"
+                  onClick={() => getDetailSatuanAct(item["Satuan"])}
+                >
+                  <FaEye />
                 </Button>
               </div>
             </div>

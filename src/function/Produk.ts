@@ -114,3 +114,21 @@ export const getProdukById = async (id:string) => {
       return error;
     }
   };
+
+export const updatebatchproduct = async(mydata:any)=>{
+  try {
+    var postData = {
+      data:mydata 
+    };
+
+    const response = await axios.post(
+      `${baseUrl}product/updatebatch`,postData, {headers:headers});
+
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+}
+
+
+  

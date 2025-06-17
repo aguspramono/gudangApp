@@ -21,6 +21,7 @@ import {
   FaEdit,
   FaRegTrashAlt,
   FaCaretDown,
+  FaEye,
 } from "react-icons/fa";
 
 import {
@@ -418,12 +419,14 @@ export function Lokasi() {
               style={{ cursor: "pointer", marginTop: 5 }}
             >
               <div className="card-body p-0 p-2 d-flex justify-content-between">
-                <span>{i + 1 + ". " + item["Lokasi"]}</span>
-                <Button variant="primary" className="btn-sm">
-                  {" "}
-                  <FaCaretDown
-                    onClick={() => getDetailLokAct(item["Lokasi"])}
-                  />
+                <span>{item["Lokasi"]}</span>
+
+                <Button
+                  variant="light"
+                  className="btn-sm text-primary"
+                  onClick={() => getDetailLokAct(item["Lokasi"])}
+                >
+                  <FaEye />
                 </Button>
               </div>
             </div>

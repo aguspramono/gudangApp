@@ -86,10 +86,10 @@ function Header() {
                   <NavDropdown.Item href="/orderbarang">
                     <FaAngleRight /> Order Barang
                   </NavDropdown.Item>
-                  <NavDropdown.Item href="#action5">
+                  <NavDropdown.Item href="/penerimaanbarang">
                     <FaAngleRight /> Penerimaan Barang
                   </NavDropdown.Item>
-                  <NavDropdown.Item href="#action6">
+                  <NavDropdown.Item href="/pengeluaranbarang">
                     <FaAngleRight /> Pengeluaran Barang
                   </NavDropdown.Item>
                   <NavDropdown.Divider />

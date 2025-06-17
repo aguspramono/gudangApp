@@ -11,6 +11,8 @@ import { Kategori } from "./pages/Kategori.tsx";
 import { Stockdistribusi } from "./pages/Stockdistribusi.tsx";
 import { Pesananbarang } from "./pages/Pesananbarang.tsx";
 import { Orderbarang } from "./pages/Orderbarang.tsx";
+import { Penerimaanbarang } from "./pages/Penerimaanbarang.tsx";
+import { Pengeluaranbarang } from "./pages/Pengeluaranbarang.tsx";
 
 function App() {
   return (
@@ -29,6 +31,14 @@ function App() {
           <Route path="/stockdistribusi" element={<Stockdistribusi />}></Route>
           <Route path="/pesananbarang" element={<Pesananbarang />}></Route>
           <Route path="/orderbarang" element={<Orderbarang />}></Route>
+          <Route
+            path="/penerimaanbarang"
+            element={<Penerimaanbarang />}
+          ></Route>
+          <Route
+            path="/pengeluaranbarang"
+            element={<Pengeluaranbarang />}
+          ></Route>
         </Routes>
       </div>
     </BrowserRouter>

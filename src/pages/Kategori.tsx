@@ -21,6 +21,7 @@ import {
   FaEdit,
   FaRegTrashAlt,
   FaCaretDown,
+  FaEye,
 } from "react-icons/fa";
 
 import {
@@ -521,12 +522,14 @@ export function Kategori() {
               style={{ cursor: "pointer", marginTop: 5 }}
             >
               <div className="card-body p-0 p-2 d-flex justify-content-between">
-                <span>{i + 1 + ". " + item["Kategori"]}</span>
-                <Button variant="primary" className="btn-sm">
-                  {" "}
-                  <FaCaretDown
-                    onClick={() => getDetailKategoriAct(item["Kategori"])}
-                  />
+                <span>{item["Kategori"]}</span>
+
+                <Button
+                  variant="light"
+                  className="btn-sm text-primary"
+                  onClick={() => getDetailKategoriAct(item["Kategori"])}
+                >
+                  <FaEye />
                 </Button>
               </div>
             </div>

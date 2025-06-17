@@ -47,6 +47,21 @@ const headers = {
       }
     };
 
+    export const getAllLokasi = async () => {
+      try {
+        const response = await axios.get(
+          `${baseUrl}lokasi/all`,{headers:headers}
+        );
+  
+        return response.data.datalokasi;
+      } catch (error) {
+        return error;
+      }
+    };
+
+
+    
+
   export const createLokasi = async (Lokasi:string,Keterangan:string,TglUbah= new Date(),Username:string) => {
       try {
         var postData = {

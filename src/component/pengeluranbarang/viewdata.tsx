@@ -25,40 +25,35 @@ import {
 } from "react-icons/fa";
 
 import {
-  getOrderBarang,
-  getPoCount,
-  getDataPoDetail,
-  getDataPo,
-  deleteDatapo,
-  deleteDataDetailpo,
-} from "./../../function/Orderbarang";
+  getStockOut,
+  getStockOutCount,
+} from "./../../function/Pengeluaranbarang";
+
 import { getCurrentDateInput } from "./../../function/Datenow";
-import { Tambahorderbarang } from "./tambah";
+import { Tambahpengeluaranbarang } from "./tambah";
 import { createMessage, createMessageConfirm } from "./../../function/Alert";
 import { closingbulanan } from "./../../function/Closingbulanan";
-import {
-  cekStockPurchDetailbyNopo,
-  cekStockPoDetailbyNopo,
-} from "./../../function/Stock";
 
 export function Viewdata() {
-  const [stockPo, setStockPo] = useState([]);
+  const [datastockout, setDatastockout] = useState([]);
+  const [countstockout, setCountstockout] = useState(0);
+
   const [showFilter, setShowFilter] = useState(false);
   const [showmodaltambah, setShowModalTambah] = useState(false);
   const [noData, setNoData] = useState("");
   const [loadingData, setLoadingData] = useState(false);
-  const [countpo, setCountpo] = useState(0);
-  const [ketpo, setKetPo] = useState("");
-  const [nopo, setNopo] = useState("");
-  const [optionfilter, setoptionfilter] = useState("Nomor PO");
+  const [ketstockout, setKetOut] = useState("");
+  const [noinv, setNoinv] = useState("");
+
+  const [optionfilter, setoptionfilter] = useState("Nomor Invoice");
   const [optionfiltertanggal, setoptionfiltertanggal] = useState("Semua");
   const [optionbulanval, setOptionBulanVal] = useState("");
   const [optiontahunval, setOptionTahunVal] = useState<any[]>([]);
   const [defaultoptiontahunval, setDefaultOptionTahunVal] = useState("");
-  const [purchdetail, setPurchdetail] = useState([]);
-  const [stockpodetail, setStockpodetail] = useState([]);
-  const [datapo, setDatapo] = useState([]);
-  const [datapodetail, setDatapodetail] = useState([]);
+  const [datarpurch, setDatarpurch] = useState([]);
+  const [datahutanglunas, setDatahutanglunas] = useState([]);
+  const [cekpurch, setCekPurch] = useState([]);
+
   const [closebulanan, setClosebulanan] = useState([]);
   const [tanggaldaily, setTanggalDaily] = useState(
     getCurrentDateInput(new Date())
@@ -76,8 +71,8 @@ export function Viewdata() {
   };
   const handleShowFilter = () => setShowFilter(true);
 
-  const handleShowTambah = (nopo: string) => {
-    setNopo(nopo);
+  const handleShowTambah = (noinv: string) => {
+    setNoinv(noinv);
     setShowModalTambah(true);
   };
 
@@ -85,12 +80,19 @@ export function Viewdata() {
     setShowModalTambah(false);
   };
 
+  //bypass
+  const getclosingbulanan = async (periode: string, tanggal: string) => {
+    const dataclosingval = await closingbulanan(periode, tanggal);
+    setClosebulanan(dataclosingval);
+  };
+
   const [page, setPage] = useState(1);
   const [limitQuery, setLimitQuery] = useState(0);
   const options = [
-    { value: "Nomor PO", label: "Nomor PO" },
-    { value: "Nama Supplier", label: "Nama Supplier" },
+    { value: "Nomor Invoice", label: "Nomor Invoice" },
     { value: "Departemen", label: "Departemen" },
+    { value: "Dari Gudang", label: "Dari Gudang" },
+    { value: "Ke Gudang", label: "Ke Gudang" },
   ];
   const optionsfilter = [
     { value: "Semua", label: "Semua" },
@@ -130,32 +132,7 @@ export function Viewdata() {
   let nextPageAct = 0;
   let dataCount = 0;
 
-  const datastockpurchdetail = async (nomorpoval: string) => {
-    const responsstockpurchdetail = await cekStockPurchDetailbyNopo(nomorpoval);
-    setPurchdetail(responsstockpurchdetail);
-  };
-
-  const datastockpodetail = async (nomorpoval: string) => {
-    const responsstockpodetail = await cekStockPoDetailbyNopo(nomorpoval);
-    setStockpodetail(responsstockpodetail);
-  };
-
-  const getdatapofun = async (nomorpoval: string) => {
-    const datapoval = await getDataPo(nomorpoval);
-    setDatapo(datapoval);
-  };
-
-  const getdatapodetailfun = async (nomorpoval: string) => {
-    const datapodetailval = await getDataPoDetail(nomorpoval);
-    setDatapodetail(datapodetailval);
-  };
-
-  const getclosingbulanan = async (periode: string, tanggal: string) => {
-    const dataclosingval = await closingbulanan(periode, tanggal);
-    setClosebulanan(dataclosingval);
-  };
-
-  async function getDataPoView(
+  async function getDataStockOutFun(
     like: string,
     limitqueryprev: number,
     limitquery: number,
@@ -166,7 +143,7 @@ export function Viewdata() {
     bulan: string,
     tahun: string
   ) {
-    const response = await getOrderBarang(
+    const response = await getStockOut(
       like,
       limitqueryprev,
       limitquery,
@@ -177,10 +154,10 @@ export function Viewdata() {
       bulan,
       tahun
     );
-    setStockPo(response);
+    setDatastockout(response);
   }
 
-  async function getDataCountPo(
+  async function getDataCountStockOutFun(
     like: string,
     option: string,
     filter: string,
@@ -189,7 +166,7 @@ export function Viewdata() {
     bulan: string,
     tahun: string
   ) {
-    const response = await getPoCount(
+    const response = await getStockOutCount(
       like,
       option,
       filter,
@@ -198,7 +175,7 @@ export function Viewdata() {
       bulan,
       tahun
     );
-    setCountpo(response);
+    setCountstockout(response);
   }
 
   const prosesFilterTanggal = () => {
@@ -207,7 +184,7 @@ export function Viewdata() {
   };
 
   const nextPage = () => {
-    limitPage = Math.ceil(countpo / 10);
+    limitPage = Math.ceil(countstockout / 10);
 
     if (page >= limitPage) {
       setPage(limitPage);
@@ -218,13 +195,13 @@ export function Viewdata() {
     nextPageAct = limitQuery + 10;
     setLimitQuery(nextPageAct);
 
-    if (nextPageAct >= countpo) {
-      nextPageAct = countpo;
+    if (nextPageAct >= countstockout) {
+      nextPageAct = countstockout;
       setLimitQuery(nextPageAct);
     }
 
-    getDataPoView(
-      ketpo,
+    getDataStockOutFun(
+      ketstockout,
       nextPageAct,
       10,
       optionfilter,
@@ -254,8 +231,8 @@ export function Viewdata() {
       setLimitQuery(nextPageAct);
     }
 
-    getDataPoView(
-      ketpo,
+    getDataStockOutFun(
+      ketstockout,
       nextPageAct,
       10,
       optionfilter,
@@ -269,8 +246,8 @@ export function Viewdata() {
 
   const firstPage = () => {
     setLimitQuery(0);
-    getDataPoView(
-      ketpo,
+    getDataStockOutFun(
+      ketstockout,
       0,
       10,
       optionfilter,
@@ -284,13 +261,13 @@ export function Viewdata() {
   };
 
   const lastPage = () => {
-    dataCount = countpo - (countpo % 10);
-    limitPage = Math.ceil(countpo / 10);
+    dataCount = countstockout - (countstockout % 10);
+    limitPage = Math.ceil(countstockout / 10);
 
     setLimitQuery(dataCount);
-    getDataPoView(
-      ketpo,
-      countpo - (countpo % 10),
+    getDataStockOutFun(
+      ketstockout,
+      countstockout - (countstockout % 10),
       10,
       optionfilter,
       optionfiltertanggal,
@@ -302,10 +279,83 @@ export function Viewdata() {
     setPage(limitPage);
   };
 
+  //   const deletePurchfunc = (invoice: string, gudang: string) => {
+  //     createMessageConfirm(
+  //       "Peringatan",
+  //       "Yakin ingin menghapus data ini?",
+  //       "question",
+  //       "Hapus",
+  //       "Batal"
+  //     ).then(async (result) => {
+  //       if (result == "confirmed") {
+  //         cekRpuch(invoice);
+
+  //         if (datarpurch.length > 0) {
+  //           createMessage(
+  //             "Error",
+  //             "No.Invoice Ini Sudah Ada Proses Retur",
+  //             "error"
+  //           );
+  //           return;
+  //         }
+
+  //         cekHutanglunas(invoice);
+
+  //         if (datahutanglunas.length > 0) {
+  //           createMessage(
+  //             "Error",
+  //             "No.Invoice Ini Sudah diLakukan Pelunasan",
+  //             "error"
+  //           );
+  //           return;
+  //         }
+
+  //         getCekRpurchbyivnumFun(invoice);
+
+  //         if (cekpurch.length > 0) {
+  //           getclosingbulanan("stock_periode", cekpurch[0]["Tgl"]);
+  //           if (closebulanan[0]["status"] == false) {
+  //             createMessage("Error", closebulanan[0]["message"], "error");
+  //             return;
+  //           }
+
+  //           if (gudang != cekpurch[0]["Gudang"]) {
+  //             createMessage(
+  //               "Error",
+  //               "No. Invoice ( " +
+  //                 invoice +
+  //                 " ) hanya boleh diedit oleh Gudang : " +
+  //                 cekpurch[0]["Gudang"],
+  //               "error"
+  //             );
+  //             return;
+  //           }
+  //         }
+
+  //         const response = await deletePurch(invoice);
+  //         const response1 = await deleteDetailPurch(invoice);
+  //         if (
+  //           response["message"] == "success" &&
+  //           response1["message"] == "success"
+  //         ) {
+  //           createMessage(
+  //             "Success",
+  //             "Order barang berhasil dihapus",
+  //             "success"
+  //           ).then(() => {
+  //             loadingDatas();
+  //           });
+  //         } else {
+  //           createMessage("Error", "Terjadi kesalahan", "error").then(() => {});
+  //         }
+  //       }
+  //     });
+  //   };
+
   const loadingDatas = () => {
     setLoadingData(false);
-    getDataCountPo(
-      ketpo,
+    getDataCountStockOutFun(
+      ketstockout,
       optionfilter,
       optionfiltertanggal,
       tanggaldari,
@@ -313,8 +363,8 @@ export function Viewdata() {
       optionbulanval,
       defaultoptiontahunval
     );
-    getDataPoView(
-      ketpo,
+    getDataStockOutFun(
+      ketstockout,
       0,
       10,
       optionfilter,
@@ -331,73 +381,10 @@ export function Viewdata() {
     }, 5000);
   };
 
-  const deletePo = (nopo: string) => {
-    datastockpurchdetail(nopo);
-    datastockpodetail(nopo);
-    getdatapofun(nopo);
-    createMessageConfirm(
-      "Peringatan",
-      "Yakin ingin menghapus data ini?",
-      "question",
-      "Hapus",
-      "Batal"
-    ).then(async (result) => {
-      if (result == "confirmed") {
-        if (purchdetail.length > 0) {
-          createMessage(
-            "Error",
-            "No. PO " + nopo + " Sudah Ada Penerimaan Barang",
-            "error"
-          );
-          return;
-        }
-
-        if (stockpodetail.length > 0) {
-          createMessage(
-            "Error",
-            "No. PO " + nopo + " Sudah diLakukan Closing PO",
-            "error"
-          );
-          return;
-        }
-
-        if (datapo.length > 0) {
-          getclosingbulanan("stock_periode", datapo[0]["Tgl"]);
-          if (closebulanan[0]["status"] == false) {
-            createMessage("Error", closebulanan[0]["message"], "error");
-            return;
-          }
-        }
-
-        const response = await deleteDatapo(nopo);
-        const response1 = await deleteDataDetailpo(nopo);
-
-        if (
-          response["message"] == "success" &&
-          response1["message"] == "success"
-        ) {
-          createMessage(
-            "Success",
-            "Order barang berhasil dihapus",
-            "success"
-          ).then(() => {
-            loadingDatas();
-          });
-        } else {
-          createMessage("Error", "Terjadi kesalahan", "error").then(() => {});
-        }
-      }
-    });
-  };
-
   useEffect(() => {
-    datastockpurchdetail("*");
-    datastockpodetail("*");
-    getdatapofun("*");
-    getdatapodetailfun("*");
-    getclosingbulanan("stock_periode", tanggaldaily);
     loadingDatas();
     getYear();
+    getclosingbulanan("stock_periode", tanggaldaily);
   }, []);
 
   return (
@@ -425,14 +412,14 @@ export function Viewdata() {
         <InputGroup className="mt-2">
           <Select
             defaultValue={optionfilter}
-            placeholder={"Nomor PO"}
+            placeholder={"Nomor Invoice"}
             onChange={(e: any) => setoptionfilter(e.value)}
             options={options}
           />
           <Form.Control
             placeholder={"Cari by " + optionfilter + " [Enter]"}
             aria-label=""
-            onChange={(mytext) => setKetPo(mytext.target.value)}
+            onChange={(mytext) => setKetOut(mytext.target.value)}
             onKeyUp={(event: { key: string }) => {
               if (event.key === "Enter") {
                 loadingDatas();
@@ -441,10 +428,10 @@ export function Viewdata() {
           />
         </InputGroup>
       </ButtonToolbar>
-      <Tambahorderbarang
+      <Tambahpengeluaranbarang
         show={showmodaltambah}
         onHide={handleHideModalTambah}
-        onData={nopo}
+        onData={noinv}
       />
       <Modal
         animation={false}
@@ -530,7 +517,7 @@ export function Viewdata() {
         </Modal.Footer>
       </Modal>
       <div className="d-lg-none d-sm-block">
-        {stockPo?.length < 1 ? (
+        {datastockout?.length < 1 ? (
           <div
             style={{
               display: "flex",
@@ -550,7 +537,7 @@ export function Viewdata() {
             <span>{noData}</span>
           </div>
         ) : (
-          stockPo?.map((item, i) => {
+          datastockout?.map((item, i) => {
             return (
               <div
                 className="card"
@@ -559,23 +546,29 @@ export function Viewdata() {
               >
                 <div className="card-body p-0 p-2 d-flex justify-content-between">
                   <span>
-                    {item["Tanggal"] + " - " + item["Nomor PO"]}
+                    {item["Tanggal"] + " - " + item["InvNum"]}
                     <br />
                     <small className="text-muted" style={{ fontSize: 11 }}>
-                      {item["Nama Supplier"]}
+                      {item["Departemen"] +
+                        "-" +
+                        item["Gudang"] +
+                        "-" +
+                        item["Qtty"] +
+                        " - " +
+                        item["keGudang"]}
                     </small>
                   </span>
                   <Button
                     variant="light"
                     className="btn-sm text-primary"
-                    onClick={() => console.log(item["Nomor PO"])}
+                    onClick={() => console.log(item["InvNum"])}
                   >
                     <FaEye />
                   </Button>{" "}
                   <Button
                     variant="light"
                     className="btn-sm text-danger"
-                    onClick={() => deletePo(item["Nomor PO"])}
+                    onClick={() => console.log(item["InvNum"])}
                   >
                     <FaTrash />
                   </Button>
@@ -591,17 +584,18 @@ export function Viewdata() {
           <thead>
             <tr>
               <th>Tanggal</th>
-              <th>Nomor Po</th>
-              <th>Nama Supplier</th>
+              <th>No Invoice</th>
               <th>Departemen</th>
+              <th>Dari Gudang</th>
               <th>Jlh Qtty</th>
+              <th>Ke Gudang</th>
               <th>#</th>
             </tr>
           </thead>
           <tbody>
-            {stockPo?.length < 1 ? (
+            {datastockout?.length < 1 ? (
               <tr>
-                <td colSpan={8} align="center">
+                <td colSpan={7} align="center">
                   <Spinner
                     animation="border"
                     role="status"
@@ -614,20 +608,21 @@ export function Viewdata() {
                 </td>
               </tr>
             ) : (
-              stockPo?.map((item, i) => {
+              datastockout?.map((item, i) => {
                 return (
                   <tr key={i}>
                     <td>{item["Tanggal"]}</td>
-                    <td>{item["Nomor PO"]}</td>
-                    <td>{item["Nama Supplier"]}</td>
+                    <td>{item["InvNum"]}</td>
                     <td>{item["Departemen"]}</td>
+                    <td>{item["Gudang"]}</td>
                     <td>{item["Qtty"]}</td>
+                    <td>{item["keGudang"]}</td>
                     <td>
                       <Button
                         variant="light"
                         className="btn-sm text-primary"
                         onClick={() => {
-                          handleShowTambah(item["Nomor PO"]);
+                          handleShowTambah(item["No Invoice"]);
                         }}
                       >
                         <FaEye />
@@ -635,14 +630,16 @@ export function Viewdata() {
                       <Button
                         variant="light"
                         className="btn-sm text-danger"
-                        onClick={() => deletePo(item["Nomor PO"])}
+                        onClick={() =>
+                          console.log(item["No Invoice"], item["Gudang"])
+                        }
                       >
                         <FaTrash />
                       </Button>{" "}
                       <Button
                         variant="light"
                         className="btn-sm text-secondary"
-                        onClick={() => deletePo(item["Nomor PO"])}
+                        onClick={() => console.log(item["No Invoice"])}
                       >
                         <FaPrint />
                       </Button>
@@ -658,7 +655,7 @@ export function Viewdata() {
         <span>
           <small>
             <i>
-              Total Data : <strong>{countpo}</strong>
+              Total Data : <strong>{countstockout}</strong>
             </i>
           </small>
         </span>

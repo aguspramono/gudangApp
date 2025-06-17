@@ -32,6 +32,7 @@ import {
   deleteGudang,
 } from "./../function/Gudang";
 import { createMessage, createMessageConfirm } from "./../function/Alert";
+import { FaEye } from "react-icons/fa6";
 
 export function Gudang() {
   const [show, setShow] = useState(false);
@@ -408,12 +409,14 @@ export function Gudang() {
               style={{ cursor: "pointer", marginTop: 5 }}
             >
               <div className="d-flex card-body justify-content-between p-0 p-2">
-                <span>{i + 1 + ". " + item["Gudang"]}</span>
-                <Button variant="primary" className="btn-sm">
-                  {" "}
-                  <FaCaretDown
-                    onClick={() => getDetailGudangAct(item["Gudang"])}
-                  />
+                <span>{item["Gudang"]}</span>
+
+                <Button
+                  variant="light"
+                  className="btn-sm text-primary"
+                  onClick={() => getDetailGudangAct(item["Gudang"])}
+                >
+                  <FaEye />
                 </Button>
               </div>
             </div>

@@ -21,6 +21,7 @@ import {
   FaEdit,
   FaRegTrashAlt,
   FaCaretDown,
+  FaEye,
 } from "react-icons/fa";
 
 import {
@@ -492,12 +493,14 @@ export function Supplier() {
               style={{ cursor: "pointer", marginTop: 5 }}
             >
               <div className="card-body p-0 p-2 d-flex justify-content-between">
-                <span>{i + 1 + ". " + item["Nama"]}</span>
-                <Button variant="primary" className="btn-sm">
-                  {" "}
-                  <FaCaretDown
-                    onClick={() => getDataSupplierById(item["sNo_Acc"])}
-                  />
+                <span>{item["Nama"]}</span>
+
+                <Button
+                  variant="light"
+                  className="btn-sm text-primary"
+                  onClick={() => getDataSupplierById(item["sNo_Acc"])}
+                >
+                  <FaEye />
                 </Button>
               </div>
             </div>

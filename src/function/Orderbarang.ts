@@ -46,6 +46,22 @@ export const getDataPo = async(nopo:string) =>{
   }
 }
 
+
+export const getDataPoDetail = async(nopo:string) =>{
+  try {
+    const response = await axios.get(
+      `${baseUrl}stockpodetail/detail?id=${nopo}`,{
+        headers:headers
+      }
+    );
+
+    return response.data.dataStockPoDetail;
+  } catch (error) {
+    return error;
+  }
+}
+
+
 export const deleteDatapo = async(nopo:string) =>{
   try {
     const response = await axios.get(
@@ -106,7 +122,7 @@ export const insertpodetail = async(mydata:any,departemen:string,nopo:string)=>{
     var postData = {
       data:mydata,
       depart:departemen,
-      nopo:nopo
+      nopo:nopo 
     };
 
     const response = await axios.post(
@@ -117,6 +133,50 @@ export const insertpodetail = async(mydata:any,departemen:string,nopo:string)=>{
     return error;
   }
 }
+
+export const getItemDetailPo = async (wherelike:string,pageprev:number,page:number,option:string,filter:string,tanggaldari:string,tanggalsampai:string,bulan:string,tahun:string) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}stockpodetail/itempo?like=${wherelike}&pageprev=${pageprev}&page=${page}&option=${option}&filter=${filter}&tanggaldari=${tanggaldari}&tanggalsampai=${tanggalsampai}&bulan=${bulan}&tahun=${tahun}`,{headers:headers}
+    );
+
+    return response.data.dataStockPoDetail;
+  } catch (error) {
+    return error;
+  }
+};
+
+
+export const getItemDetailPoCount = async (wherelike:string,option:string,filter:string,tanggaldari:string,tanggalsampai:string,bulan:string,tahun:string) => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}stockpodetail/datacount?like=${wherelike}&option=${option}&filter=${filter}&tanggaldari=${tanggaldari}&tanggalsampai=${tanggalsampai}&bulan=${bulan}&tahun=${tahun}`,{
+          headers:headers
+        }
+      );
+  
+      return response.data.countStockPoDetail;
+    } catch (error) {
+      return error;
+    }
+  };
+
+  export const getDataPoDetailWithKodeBarang = async(nopo:string,kode:string) =>{
+  try {
+    const response = await axios.get(
+      `${baseUrl}stockpodetail/detailwithkodebarang?id=${nopo}&kodebarang=${kode}`,{
+        headers:headers
+      }
+    );
+
+    return response.data.dataStockPoDetail;
+  } catch (error) {
+    return error;
+  }
+}
+
+
+
 
 
 

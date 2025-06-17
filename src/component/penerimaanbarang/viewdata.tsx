@@ -25,40 +25,40 @@ import {
 } from "react-icons/fa";
 
 import {
-  getOrderBarang,
-  getPoCount,
-  getDataPoDetail,
-  getDataPo,
-  deleteDatapo,
-  deleteDataDetailpo,
-} from "./../../function/Orderbarang";
+  getPurchBarang,
+  getPurchCount,
+  deletePurch,
+  deleteDetailPurch,
+  getRpurchbyivnum,
+  getHutanglunasbyivnum,
+  getCekRpurchbyivnum,
+} from "./../../function/Penerimaanbarang";
+
 import { getCurrentDateInput } from "./../../function/Datenow";
-import { Tambahorderbarang } from "./tambah";
+import { Tambahpenerimaanbarang } from "./tambah";
 import { createMessage, createMessageConfirm } from "./../../function/Alert";
 import { closingbulanan } from "./../../function/Closingbulanan";
-import {
-  cekStockPurchDetailbyNopo,
-  cekStockPoDetailbyNopo,
-} from "./../../function/Stock";
 
 export function Viewdata() {
-  const [stockPo, setStockPo] = useState([]);
+  const [datapurch, setDatapurch] = useState([]);
+  const [countpurch, setCountpurch] = useState(0);
+
   const [showFilter, setShowFilter] = useState(false);
   const [showmodaltambah, setShowModalTambah] = useState(false);
   const [noData, setNoData] = useState("");
   const [loadingData, setLoadingData] = useState(false);
-  const [countpo, setCountpo] = useState(0);
-  const [ketpo, setKetPo] = useState("");
-  const [nopo, setNopo] = useState("");
-  const [optionfilter, setoptionfilter] = useState("Nomor PO");
+  const [ketpurch, setKetPurch] = useState("");
+  const [noinv, setNoinv] = useState("");
+
+  const [optionfilter, setoptionfilter] = useState("Nomor Invoice");
   const [optionfiltertanggal, setoptionfiltertanggal] = useState("Semua");
   const [optionbulanval, setOptionBulanVal] = useState("");
   const [optiontahunval, setOptionTahunVal] = useState<any[]>([]);
   const [defaultoptiontahunval, setDefaultOptionTahunVal] = useState("");
-  const [purchdetail, setPurchdetail] = useState([]);
-  const [stockpodetail, setStockpodetail] = useState([]);
-  const [datapo, setDatapo] = useState([]);
-  const [datapodetail, setDatapodetail] = useState([]);
+  const [datarpurch, setDatarpurch] = useState([]);
+  const [datahutanglunas, setDatahutanglunas] = useState([]);
+  const [cekpurch, setCekPurch] = useState([]);
+
   const [closebulanan, setClosebulanan] = useState([]);
   const [tanggaldaily, setTanggalDaily] = useState(
     getCurrentDateInput(new Date())
@@ -76,8 +76,8 @@ export function Viewdata() {
   };
   const handleShowFilter = () => setShowFilter(true);
 
-  const handleShowTambah = (nopo: string) => {
-    setNopo(nopo);
+  const handleShowTambah = (noinv: string) => {
+    setNoinv(noinv);
     setShowModalTambah(true);
   };
 
@@ -85,12 +85,35 @@ export function Viewdata() {
     setShowModalTambah(false);
   };
 
+  //Cek
+
+  const cekRpuch = async (ivnum: string) => {
+    const response = await getRpurchbyivnum(ivnum);
+    setDatarpurch(response);
+  };
+
+  const cekHutanglunas = async (ivnum: string) => {
+    const response = await getHutanglunasbyivnum(ivnum);
+    setDatahutanglunas(response);
+  };
+
+  const getCekRpurchbyivnumFun = async (ivnum: string) => {
+    const response = await getCekRpurchbyivnum(ivnum);
+    setCekPurch(response);
+  };
+
+  //bypass
+  const getclosingbulanan = async (periode: string, tanggal: string) => {
+    const dataclosingval = await closingbulanan(periode, tanggal);
+    setClosebulanan(dataclosingval);
+  };
+
   const [page, setPage] = useState(1);
   const [limitQuery, setLimitQuery] = useState(0);
   const options = [
-    { value: "Nomor PO", label: "Nomor PO" },
+    { value: "Nomor Invoice", label: "Nomor Invoice" },
     { value: "Nama Supplier", label: "Nama Supplier" },
-    { value: "Departemen", label: "Departemen" },
+    { value: "Gudang", label: "Gudang" },
   ];
   const optionsfilter = [
     { value: "Semua", label: "Semua" },
@@ -130,32 +153,7 @@ export function Viewdata() {
   let nextPageAct = 0;
   let dataCount = 0;
 
-  const datastockpurchdetail = async (nomorpoval: string) => {
-    const responsstockpurchdetail = await cekStockPurchDetailbyNopo(nomorpoval);
-    setPurchdetail(responsstockpurchdetail);
-  };
-
-  const datastockpodetail = async (nomorpoval: string) => {
-    const responsstockpodetail = await cekStockPoDetailbyNopo(nomorpoval);
-    setStockpodetail(responsstockpodetail);
-  };
-
-  const getdatapofun = async (nomorpoval: string) => {
-    const datapoval = await getDataPo(nomorpoval);
-    setDatapo(datapoval);
-  };
-
-  const getdatapodetailfun = async (nomorpoval: string) => {
-    const datapodetailval = await getDataPoDetail(nomorpoval);
-    setDatapodetail(datapodetailval);
-  };
-
-  const getclosingbulanan = async (periode: string, tanggal: string) => {
-    const dataclosingval = await closingbulanan(periode, tanggal);
-    setClosebulanan(dataclosingval);
-  };
-
-  async function getDataPoView(
+  async function getDataPurchFun(
     like: string,
     limitqueryprev: number,
     limitquery: number,
@@ -166,7 +164,7 @@ export function Viewdata() {
     bulan: string,
     tahun: string
   ) {
-    const response = await getOrderBarang(
+    const response = await getPurchBarang(
       like,
       limitqueryprev,
       limitquery,
@@ -177,7 +175,7 @@ export function Viewdata() {
       bulan,
       tahun
     );
-    setStockPo(response);
+    setDatapurch(response);
   }
 
   async function getDataCountPo(
@@ -189,7 +187,7 @@ export function Viewdata() {
     bulan: string,
     tahun: string
   ) {
-    const response = await getPoCount(
+    const response = await getPurchCount(
       like,
       option,
       filter,
@@ -198,7 +196,7 @@ export function Viewdata() {
       bulan,
       tahun
     );
-    setCountpo(response);
+    setCountpurch(response);
   }
 
   const prosesFilterTanggal = () => {
@@ -207,7 +205,7 @@ export function Viewdata() {
   };
 
   const nextPage = () => {
-    limitPage = Math.ceil(countpo / 10);
+    limitPage = Math.ceil(countpurch / 10);
 
     if (page >= limitPage) {
       setPage(limitPage);
@@ -218,13 +216,13 @@ export function Viewdata() {
     nextPageAct = limitQuery + 10;
     setLimitQuery(nextPageAct);
 
-    if (nextPageAct >= countpo) {
-      nextPageAct = countpo;
+    if (nextPageAct >= countpurch) {
+      nextPageAct = countpurch;
       setLimitQuery(nextPageAct);
     }
 
-    getDataPoView(
-      ketpo,
+    getDataPurchFun(
+      ketpurch,
       nextPageAct,
       10,
       optionfilter,
@@ -254,8 +252,8 @@ export function Viewdata() {
       setLimitQuery(nextPageAct);
     }
 
-    getDataPoView(
-      ketpo,
+    getDataPurchFun(
+      ketpurch,
       nextPageAct,
       10,
       optionfilter,
@@ -269,8 +267,8 @@ export function Viewdata() {
 
   const firstPage = () => {
     setLimitQuery(0);
-    getDataPoView(
-      ketpo,
+    getDataPurchFun(
+      ketpurch,
       0,
       10,
       optionfilter,
@@ -284,13 +282,13 @@ export function Viewdata() {
   };
 
   const lastPage = () => {
-    dataCount = countpo - (countpo % 10);
-    limitPage = Math.ceil(countpo / 10);
+    dataCount = countpurch - (countpurch % 10);
+    limitPage = Math.ceil(countpurch / 10);
 
     setLimitQuery(dataCount);
-    getDataPoView(
-      ketpo,
-      countpo - (countpo % 10),
+    getDataPurchFun(
+      ketpurch,
+      countpurch - (countpurch % 10),
       10,
       optionfilter,
       optionfiltertanggal,
@@ -302,39 +300,7 @@ export function Viewdata() {
     setPage(limitPage);
   };
 
-  const loadingDatas = () => {
-    setLoadingData(false);
-    getDataCountPo(
-      ketpo,
-      optionfilter,
-      optionfiltertanggal,
-      tanggaldari,
-      tanggalsampai,
-      optionbulanval,
-      defaultoptiontahunval
-    );
-    getDataPoView(
-      ketpo,
-      0,
-      10,
-      optionfilter,
-      optionfiltertanggal,
-      tanggaldari,
-      tanggalsampai,
-      optionbulanval,
-      defaultoptiontahunval
-    );
-    setNoData("");
-    setTimeout(() => {
-      setLoadingData(true);
-      setNoData("Data Tidak Ditemukan");
-    }, 5000);
-  };
-
-  const deletePo = (nopo: string) => {
-    datastockpurchdetail(nopo);
-    datastockpodetail(nopo);
-    getdatapofun(nopo);
+  const deletePurchfunc = (invoice: string, gudang: string) => {
     createMessageConfirm(
       "Peringatan",
       "Yakin ingin menghapus data ini?",
@@ -343,35 +309,52 @@ export function Viewdata() {
       "Batal"
     ).then(async (result) => {
       if (result == "confirmed") {
-        if (purchdetail.length > 0) {
+        cekRpuch(invoice);
+
+        if (datarpurch.length > 0) {
           createMessage(
             "Error",
-            "No. PO " + nopo + " Sudah Ada Penerimaan Barang",
+            "No.Invoice Ini Sudah Ada Proses Retur",
             "error"
           );
           return;
         }
 
-        if (stockpodetail.length > 0) {
+        cekHutanglunas(invoice);
+
+        if (datahutanglunas.length > 0) {
           createMessage(
             "Error",
-            "No. PO " + nopo + " Sudah diLakukan Closing PO",
+            "No.Invoice Ini Sudah diLakukan Pelunasan",
             "error"
           );
           return;
         }
 
-        if (datapo.length > 0) {
-          getclosingbulanan("stock_periode", datapo[0]["Tgl"]);
+        getCekRpurchbyivnumFun(invoice);
+
+        if (cekpurch.length > 0) {
+          getclosingbulanan("stock_periode", cekpurch[0]["Tgl"]);
           if (closebulanan[0]["status"] == false) {
             createMessage("Error", closebulanan[0]["message"], "error");
             return;
           }
+
+          if (gudang != cekpurch[0]["Gudang"]) {
+            createMessage(
+              "Error",
+              "No. Invoice ( " +
+                invoice +
+                " ) hanya boleh diedit oleh Gudang : " +
+                cekpurch[0]["Gudang"],
+              "error"
+            );
+            return;
+          }
         }
 
-        const response = await deleteDatapo(nopo);
-        const response1 = await deleteDataDetailpo(nopo);
-
+        const response = await deletePurch(invoice);
+        const response1 = await deleteDetailPurch(invoice);
         if (
           response["message"] == "success" &&
           response1["message"] == "success"
@@ -390,14 +373,42 @@ export function Viewdata() {
     });
   };
 
+  const loadingDatas = () => {
+    setLoadingData(false);
+    getDataCountPo(
+      ketpurch,
+      optionfilter,
+      optionfiltertanggal,
+      tanggaldari,
+      tanggalsampai,
+      optionbulanval,
+      defaultoptiontahunval
+    );
+    getDataPurchFun(
+      ketpurch,
+      0,
+      10,
+      optionfilter,
+      optionfiltertanggal,
+      tanggaldari,
+      tanggalsampai,
+      optionbulanval,
+      defaultoptiontahunval
+    );
+    setNoData("");
+    setTimeout(() => {
+      setLoadingData(true);
+      setNoData("Data Tidak Ditemukan");
+    }, 5000);
+  };
+
   useEffect(() => {
-    datastockpurchdetail("*");
-    datastockpodetail("*");
-    getdatapofun("*");
-    getdatapodetailfun("*");
-    getclosingbulanan("stock_periode", tanggaldaily);
     loadingDatas();
     getYear();
+    cekRpuch("*");
+    cekHutanglunas("*");
+    getCekRpurchbyivnumFun("*");
+    getclosingbulanan("stock_periode", tanggaldaily);
   }, []);
 
   return (
@@ -425,14 +436,14 @@ export function Viewdata() {
         <InputGroup className="mt-2">
           <Select
             defaultValue={optionfilter}
-            placeholder={"Nomor PO"}
+            placeholder={"Nomor Invoice"}
             onChange={(e: any) => setoptionfilter(e.value)}
             options={options}
           />
           <Form.Control
             placeholder={"Cari by " + optionfilter + " [Enter]"}
             aria-label=""
-            onChange={(mytext) => setKetPo(mytext.target.value)}
+            onChange={(mytext) => setKetPurch(mytext.target.value)}
             onKeyUp={(event: { key: string }) => {
               if (event.key === "Enter") {
                 loadingDatas();
@@ -441,10 +452,10 @@ export function Viewdata() {
           />
         </InputGroup>
       </ButtonToolbar>
-      <Tambahorderbarang
+      <Tambahpenerimaanbarang
         show={showmodaltambah}
         onHide={handleHideModalTambah}
-        onData={nopo}
+        onData={noinv}
       />
       <Modal
         animation={false}
@@ -530,7 +541,7 @@ export function Viewdata() {
         </Modal.Footer>
       </Modal>
       <div className="d-lg-none d-sm-block">
-        {stockPo?.length < 1 ? (
+        {datapurch?.length < 1 ? (
           <div
             style={{
               display: "flex",
@@ -550,7 +561,7 @@ export function Viewdata() {
             <span>{noData}</span>
           </div>
         ) : (
-          stockPo?.map((item, i) => {
+          datapurch?.map((item, i) => {
             return (
               <div
                 className="card"
@@ -559,23 +570,27 @@ export function Viewdata() {
               >
                 <div className="card-body p-0 p-2 d-flex justify-content-between">
                   <span>
-                    {item["Tanggal"] + " - " + item["Nomor PO"]}
+                    {item["Tanggal"] + " - " + item["No Invoice"]}
                     <br />
                     <small className="text-muted" style={{ fontSize: 11 }}>
-                      {item["Nama Supplier"]}
+                      {item["Nama Supplier"] +
+                        "-" +
+                        item["Gudang"] +
+                        "-" +
+                        item["Qtty"]}
                     </small>
                   </span>
                   <Button
                     variant="light"
                     className="btn-sm text-primary"
-                    onClick={() => console.log(item["Nomor PO"])}
+                    onClick={() => console.log(item["No Invoice"])}
                   >
                     <FaEye />
                   </Button>{" "}
                   <Button
                     variant="light"
                     className="btn-sm text-danger"
-                    onClick={() => deletePo(item["Nomor PO"])}
+                    onClick={() => console.log(item["No Invoice"])}
                   >
                     <FaTrash />
                   </Button>
@@ -591,15 +606,15 @@ export function Viewdata() {
           <thead>
             <tr>
               <th>Tanggal</th>
-              <th>Nomor Po</th>
+              <th>No Invoice</th>
               <th>Nama Supplier</th>
-              <th>Departemen</th>
+              <th>Gudang</th>
               <th>Jlh Qtty</th>
               <th>#</th>
             </tr>
           </thead>
           <tbody>
-            {stockPo?.length < 1 ? (
+            {datapurch?.length < 1 ? (
               <tr>
                 <td colSpan={8} align="center">
                   <Spinner
@@ -614,20 +629,20 @@ export function Viewdata() {
                 </td>
               </tr>
             ) : (
-              stockPo?.map((item, i) => {
+              datapurch?.map((item, i) => {
                 return (
                   <tr key={i}>
                     <td>{item["Tanggal"]}</td>
-                    <td>{item["Nomor PO"]}</td>
+                    <td>{item["No Invoice"]}</td>
                     <td>{item["Nama Supplier"]}</td>
-                    <td>{item["Departemen"]}</td>
+                    <td>{item["Gudang"]}</td>
                     <td>{item["Qtty"]}</td>
                     <td>
                       <Button
                         variant="light"
                         className="btn-sm text-primary"
                         onClick={() => {
-                          handleShowTambah(item["Nomor PO"]);
+                          handleShowTambah(item["No Invoice"]);
                         }}
                       >
                         <FaEye />
@@ -635,14 +650,16 @@ export function Viewdata() {
                       <Button
                         variant="light"
                         className="btn-sm text-danger"
-                        onClick={() => deletePo(item["Nomor PO"])}
+                        onClick={() =>
+                          deletePurchfunc(item["No Invoice"], item["Gudang"])
+                        }
                       >
                         <FaTrash />
                       </Button>{" "}
                       <Button
                         variant="light"
                         className="btn-sm text-secondary"
-                        onClick={() => deletePo(item["Nomor PO"])}
+                        onClick={() => console.log(item["No Invoice"])}
                       >
                         <FaPrint />
                       </Button>
@@ -658,7 +675,7 @@ export function Viewdata() {
         <span>
           <small>
             <i>
-              Total Data : <strong>{countpo}</strong>
+              Total Data : <strong>{countpurch}</strong>
             </i>
           </small>
         </span>

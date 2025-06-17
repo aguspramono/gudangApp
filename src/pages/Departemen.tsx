@@ -21,6 +21,7 @@ import {
   FaEdit,
   FaRegTrashAlt,
   FaCaretDown,
+  FaEye,
 } from "react-icons/fa";
 
 import {
@@ -431,12 +432,13 @@ export function Departemen() {
               style={{ cursor: "pointer", marginTop: 5 }}
             >
               <div className="card-body p-0 p-2 d-flex justify-content-between">
-                <span>{i + 1 + ". " + item["Keterangan"]}</span>
-                <Button variant="primary" className="btn-sm">
-                  {" "}
-                  <FaCaretDown
-                    onClick={() => getDetailDepartemenAct(item["Departemen"])}
-                  />
+                <span>{item["Keterangan"]}</span>
+                <Button
+                  variant="light"
+                  className="btn-sm text-primary"
+                  onClick={() => getDetailDepartemenAct(item["Departemen"])}
+                >
+                  <FaEye />
                 </Button>
               </div>
             </div>

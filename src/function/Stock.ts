@@ -30,3 +30,26 @@ export const cekStockPoDetailbyNopo = async (nopo:string) => {
     }
   };
 
+  export const cekStockPoDetailbyNopoOnly = async (nopo:string) => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}stockpodetail/detailponly?id=${nopo}`,{headers:headers}
+      );
+  
+      return response.data.dataStockPoDetail;
+    } catch (error) {
+      return error;
+    }
+  };
+
+  export const cekStockPoDetailbyNopesanan= async (nopo:string) => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}stockpodetail/detailpopesanan?id=${nopo}`,{headers:headers}
+      );
+      return response.data.dataStockPoDetail;
+    } catch (error) {
+      return error;
+    }
+  };
+

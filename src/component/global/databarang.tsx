@@ -28,7 +28,7 @@ export function Viewdataproduk(props: any) {
   const [produk, setProduk] = useState([]);
   const [countproduk, setCountproduk] = useState(0);
   const [ketproduk, setKetProduk] = useState("");
-  const [optionfilter, setoptionfilter] = useState("Nama");
+  const [optionfilter, setoptionfilter] = useState("Kode Barang");
 
   const [page, setPage] = useState(1);
   const [limitQuery, setLimitQuery] = useState(0);

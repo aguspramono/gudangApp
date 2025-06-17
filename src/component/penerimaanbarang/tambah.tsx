@@ -23,41 +23,45 @@ import {
   createMessageConfirm,
   msg,
 } from "./../../function/Alert";
-import { Optiondepartemen } from "./../global/optiondepartemen";
 import { Optiongudang } from "./../global/optiongudang";
 import { Viewdatasupplier } from "./../global/datasupplier";
 import { Viewdataproduk } from "./../global/databarang";
 import { getCurrentDateInput } from "./../../function/Datenow";
-import {
-  getDataPo,
-  deleteDatapo,
-  deleteDataDetailpo,
-  insertpo,
-  insertpodetail,
-} from "./../../function/Orderbarang";
-import {
-  cekStockPurchDetailbyNopo,
-  cekStockPoDetailbyNopo,
-  cekStockPoDetailbyNopoOnly,
-} from "./../../function/Stock";
-import { closingbulanan } from "./../../function/Closingbulanan";
-import { getPesananDetailByID } from "./../../function/Pesananbarang";
-import { Viewdatapesanandetail } from "./../pesananbarang/viewdatadetailpesananbarang";
+import Select from "react-select";
 
-export const Tambahorderbarang = (props: any) => {
+import {
+  getRpurchbyivnum,
+  getHutanglunasbyivnum,
+  getCekRpurchbyivnum,
+  insertpurch,
+  insertpurchdetail,
+  deletePurch,
+  deleteDetailPurch,
+  getPurchbyivnum,
+  getPurchdetailbyivnum,
+} from "./../../function/Penerimaanbarang";
+
+import { updatebatchproduct } from "./../../function/Produk";
+
+import { Viewdataitemorderbarang } from "./../orderbarang/viewitemorderbarang";
+import { closingbulanan } from "./../../function/Closingbulanan";
+
+export const Tambahpenerimaanbarang = (props: any) => {
+  const [metodepembayaranval, setMetodepembayaranval] = useState("Cash/Tunai");
+  const [datarpurch, setDatarpurch] = useState([]);
+  const [datahutanglunas, setDatahutanglunas] = useState([]);
+  const [cekpurch, setCekPurch] = useState([]);
+
   const [loadSave, setLoadSave] = useState(true);
   const [showsupplier, setShowsupplier] = useState(false);
   const [showproduk, setShowproduk] = useState(false);
-  const [showpesanan, setShowpesanan] = useState(false);
-  const [databarang, setDatabarang] = useState<any[]>([]);
-  const [purchdetail, setPurchdetail] = useState([]);
-  const [pesanandetail, setPesanandetail] = useState([]);
-  const [stockpodetail, setStockpodetail] = useState([]);
-  const [stockpodetailnoponly, setDataNoponly] = useState([]);
+  const [kredit, setShowkredit] = useState("d-none");
+  const [kreditval, setKreditval] = useState(0);
 
-  const [datapo, setDatapo] = useState([]);
+  const [showitempo, setShowItemPo] = useState(false);
+  const [databarang, setDatabarang] = useState<any[]>([]);
   const [closebulanan, setClosebulanan] = useState([]);
-  const [departemen, setDepartemen] = useState(null);
+
   const [gudang, setGudang] = useState(null);
   const [jumlahqty, setJumlahqty] = useState(0);
   const [jumlahrp, setJumlahrp] = useState(0);
@@ -67,8 +71,7 @@ export const Tambahorderbarang = (props: any) => {
     getCurrentDateInput(new Date())
   );
   const [kodebarang, setKodebarang] = useState("");
-  const [nomorpo, setNomorpo] = useState("");
-  const [nomorpotempval, setNomorpotempval] = useState("");
+  const [nomorinv, setNoInv] = useState("");
   const [kodesupp, setKodeSupp] = useState("");
   const [namasupp, setNamaSupp] = useState("");
   const [diskongrand, setDiskongrand] = useState(0);
@@ -79,6 +82,20 @@ export const Tambahorderbarang = (props: any) => {
   const [grandtotalsum, setGrandtotalsum] = useState(0);
   const [keteranganval, setKeteranganVal] = useState("");
 
+  //handle
+  const handlePembayaran = () => {
+    if (metodepembayaranval == "Cash/Tunai") {
+      setShowkredit("d-none");
+      setKreditval(0);
+    } else {
+      setShowkredit("d-block");
+    }
+  };
+
+  const handleCloseModal = () => {
+    props.onHide(false);
+  };
+
   const handleCloseSupplier = () => {
     setShowsupplier(false);
   };
@@ -87,124 +104,16 @@ export const Tambahorderbarang = (props: any) => {
   const handleCloseProduk = () => {
     setShowproduk(false);
   };
-  const handleClosePesanan = () => {
-    setShowpesanan(false);
-  };
   const handleShowProduk = () => setShowproduk(true);
-  const handleShowPesanan = (kodebarang: string) => {
-    setShowpesanan(true);
-    setKodebarang(kodebarang);
-  };
 
   const handleGudang = (e: any) => {
     setGudang(e);
-  };
-
-  const handleDepartemen = (e: any) => {
-    setDepartemen(e);
-  };
-
-  const bersih = () => {
-    setDatabarang([]);
-    setNomorpo("");
-    setKodeSupp("");
-    setNamaSupp("");
-    setKeteranganVal("");
-    setDiskongrand(0);
-    setPpngrand(0);
-    setPpnnominalgrand(0);
-    setDiskonnominalgrand(0);
-    setGrandtotal(0);
-    setGrandtotalsum(0);
-    setJumlahqty(0);
-    setJumlahrp(0);
-  };
-
-  const dataPesananByID = async (nopo: string, kodebar: string) => {
-    const response = await getPesananDetailByID(nopo, kodebar);
-    setPesanandetail(response);
-
-    setDatabarang((prev) =>
-      prev.map((item) =>
-        item.kodebarang === kodebarang
-          ? {
-              ...item,
-              nomorpesanan: response[0]["NoPesanan"],
-              alokasi: response[0]["Alokasi"],
-            }
-          : item
-      )
-    );
-    handleClosePesanan();
-  };
-
-  const handlePesananBarang = (e: any, e2: any) => {
-    dataPesananByID(e, e2);
-  };
-
-  const updatealokasi = (kode: string, alokasival: string) => {
-    setDatabarang((prev) =>
-      prev.map((item) =>
-        item.kodebarang === kode
-          ? {
-              ...item,
-              alokasi: alokasival,
-            }
-          : item
-      )
-    );
-  };
-
-  const updatenopesanan = (kode: string, nopes: string) => {
-    setDatabarang((prev) =>
-      prev.map((item) =>
-        item.kodebarang === kode
-          ? {
-              ...item,
-              nomorpesanan: nopes,
-            }
-          : item
-      )
-    );
   };
 
   const handleDetailSupplier = (e: any) => {
     setKodeSupp(e[0]["sNo_Acc"]);
     setNamaSupp(e[0]["Nama"]);
     handleCloseSupplier();
-  };
-
-  const datastockpurchdetail = async (nomorpoval: string) => {
-    const responsstockpurchdetail = await cekStockPurchDetailbyNopo(nomorpoval);
-    setPurchdetail(responsstockpurchdetail);
-  };
-
-  const datastockpodetail = async (nomorpoval: string) => {
-    const responsstockpodetail = await cekStockPoDetailbyNopo(nomorpoval);
-    setStockpodetail(responsstockpodetail);
-  };
-
-  const getpodetailnonlyfunc = async (nomorpoval: string) => {
-    const response = await cekStockPoDetailbyNopoOnly(nomorpoval);
-    setDataNoponly(response);
-  };
-
-  const getdatapofun = async (nomorpoval: string) => {
-    const datapoval = await getDataPo(nomorpoval);
-    setDatapo(datapoval);
-  };
-
-  const getclosingbulanan = async (periode: string, tanggal: string) => {
-    const dataclosingval = await closingbulanan(periode, tanggal);
-    setClosebulanan(dataclosingval);
-  };
-
-  const deletepofunc = async (nomorpoval: string) => {
-    await deleteDatapo(nomorpoval);
-  };
-
-  const deletepodetailfunc = async (nomorpoval: string) => {
-    await deleteDataDetailpo(nomorpoval);
   };
 
   const handleProductDetail = (e: any) => {
@@ -225,68 +134,55 @@ export const Tambahorderbarang = (props: any) => {
     ];
 
     setDatabarang(databaranguniq);
-    setDiskonnominalgrand(0);
-    setPpnnominalgrand(0);
-    setPpngrand(0);
-    setDiskongrand(0);
-    setGrandtotalsum(0);
     handleCloseProduk();
   };
 
-  const updateGrandtotal = () => {
-    let jumlahgrandvaldiskon = 0;
-    let jumlahgrandvalppn = 0;
-    if (isNaN(diskongrand)) {
-      setDiskongrand(0);
-    }
-
-    if (isNaN(ppngrand)) {
-      setPpngrand(0);
-    }
-
-    if (isNaN(ppnnominalgrand)) {
-      setPpnnominalgrand(0);
-    }
-
-    if (isNaN(diskonnominalgrand)) {
-      setDiskonnominalgrand(0);
-    }
-
-    jumlahgrandvaldiskon = jumlahrp - (jumlahrp * diskongrand) / 100;
-    jumlahgrandvalppn =
-      jumlahgrandvaldiskon + (jumlahgrandvaldiskon * ppngrand) / 100;
-
-    jumlahgrandvalppn =
-      jumlahgrandvalppn + ppnnominalgrand - diskonnominalgrand;
-    setGrandtotalsum(jumlahgrandvalppn);
+  const handleShowItemPO = (kodebarang: string) => {
+    setShowItemPo(true);
+    setKodebarang(kodebarang);
   };
 
-  const updateSummary = () => {
-    if (databarang.length < 1) {
-      setJumlahqty(0);
-      setJumlahrp(0);
-    } else {
-      let jumlahqtyval = 0;
-      let jumlahrpval = 0;
-      databarang.map((item) => {
-        jumlahqtyval = jumlahqtyval + parseFloat(item["qtybarang"]);
-        jumlahrpval = jumlahrpval + parseFloat(item["jumlahbarang"]);
-      });
-
-      setJumlahqty(jumlahqtyval);
-      setJumlahrp(jumlahrpval);
-      setGrandtotal(jumlahrpval);
-    }
+  const handleCloseItemPo = () => {
+    setShowItemPo(false);
   };
 
-  const updateJumlahbyqty = (kode: string, qty: number, harga: number) => {
+  const handleSetItemPo = (e: any) => {
+    setDatabarang((prev) =>
+      prev.map((item) =>
+        item.kodebarang === e[0]["Kode"]
+          ? {
+              ...item,
+              nomorpesanan: e[0]["NoPo"],
+              alokasi: e[0]["Alokasi"],
+            }
+          : item
+      )
+    );
+
+    handleCloseItemPo();
+  };
+
+  const handleUpdateAlokasi = (kodebarang: string, alokasival: string) => {
+    setDatabarang((prev) =>
+      prev.map((item) =>
+        item.kodebarang === kodebarang
+          ? {
+              ...item,
+              alokasi: alokasival,
+            }
+          : item
+      )
+    );
+  };
+
+  const handleQty = (kodebarang: string, qty: number, harga: number) => {
     if (isNaN(qty)) {
       qty = 0;
     }
     let jumlahharga = qty * harga;
     setDatabarang((prev) =>
       prev.map((item) =>
-        item.kodebarang === kode
+        item.kodebarang === kodebarang
           ? {
               ...item,
               qtybarang: qty,
@@ -300,7 +196,28 @@ export const Tambahorderbarang = (props: any) => {
     updateSummary();
   };
 
-  const updateJumlahbydiskon = (
+  const handleHarga = (kodebarang: string, harga: number) => {
+    if (isNaN(harga)) {
+      harga = 0;
+    }
+    setDatabarang((prev) =>
+      prev.map((item) =>
+        item.kodebarang === kodebarang
+          ? {
+              ...item,
+              qtybarang: 0,
+              hargabeliend: harga,
+              diskonbarang: 0,
+              jumlahbarang: 0,
+            }
+          : item
+      )
+    );
+
+    //updateSummary();
+  };
+
+  const handleDiskon = (
     kode: string,
     qty: number,
     diskon: number,
@@ -329,81 +246,122 @@ export const Tambahorderbarang = (props: any) => {
     updateSummary();
   };
 
-  const handleCloseModal = () => {
-    props.onHide(false);
-  };
-
-  const handleOnData = async () => {
-    bersih();
-    setNomorpotempval(props["onData"]);
-    const datastockpodetail = await cekStockPoDetailbyNopoOnly(props["onData"]);
-    const datastockpo = await getDataPo(props["onData"]);
-    setNomorpo(props["onData"]);
-    setKodeSupp(datastockpo[0]["sNo_Acc"]);
-    setNamaSupp(datastockpo[0]["Nama"]);
-    setGudang(datastockpo[0]["Gudang"]);
-    setDepartemen(datastockpodetail[0]["Departemen"]);
-    setTanggalDaily(getCurrentDateInput(new Date(datastockpo[0]["Tgl"])));
-    setDiskongrand(datastockpo[0]["Disc"]);
-    setPpngrand(datastockpo[0]["PPn"]);
-    setDiskonnominalgrand(datastockpo[0]["NominalDisc"]);
-    setPpnnominalgrand(datastockpo[0]["NominalPPn"]);
-    setKeteranganVal(datastockpo[0]["Keterangan"]);
-    let databarangarr: SetStateAction<any[]> = [];
-    datastockpodetail?.map((item: any) => {
-      let total = 0;
-      if (parseFloat(item["Disc"]) > 0) {
-        total =
-          parseFloat(item["Qtty"]) * parseFloat(item["hBeliEnd"]) -
-          (parseFloat(item["Qtty"]) *
-            parseFloat(item["hBeliEnd"]) *
-            parseFloat(item["Disc"])) /
-            100;
-      } else {
-        total = parseFloat(item["Qtty"]) * parseFloat(item["hBeliEnd"]);
-      }
-      databarangarr.push({
-        kodebarang: item["Kode"],
-        namabarang: item["Nama"],
-        qtybarang: item["Qtty"],
-        satuanbarang: item["Satuan"],
-        hargabeliend: item["hBeliEnd"],
-        diskonbarang: item["Disc"],
-        jumlahbarang: total,
-        nomorpesanan: item["NoPesanan"],
-        alokasi: item["Alokasi"],
+  //update summary
+  const updateSummary = () => {
+    if (databarang.length < 1) {
+      setJumlahqty(0);
+      setJumlahrp(0);
+    } else {
+      let jumlahqtyval = 0;
+      let jumlahrpval = 0;
+      databarang.map((item) => {
+        jumlahqtyval = jumlahqtyval + parseFloat(item["qtybarang"]);
+        jumlahrpval = jumlahrpval + parseFloat(item["jumlahbarang"]);
       });
-    });
 
-    setDatabarang(databarangarr);
-
-    updateSummary();
-    updateGrandtotal();
-    // console.log(datastockpo);
-    // console.log(datastockpodetail);
+      setJumlahqty(jumlahqtyval);
+      setJumlahrp(jumlahrpval);
+      setGrandtotal(jumlahrpval);
+    }
   };
 
-  const simpanPO = async () => {
+  //Grand Total
+  const updateGrandtotal = () => {
+    let jumlahgrandvaldiskon = 0;
+    let jumlahgrandvalppn = 0;
+
+    if (isNaN(diskongrand)) {
+      setDiskongrand(0);
+    }
+
+    if (isNaN(ppngrand)) {
+      setPpngrand(0);
+    }
+
+    if (isNaN(ppnnominalgrand)) {
+      setPpnnominalgrand(0);
+    }
+
+    if (isNaN(diskonnominalgrand)) {
+      setDiskonnominalgrand(0);
+    }
+
+    jumlahgrandvaldiskon = jumlahrp - (jumlahrp * diskongrand) / 100;
+    jumlahgrandvalppn =
+      jumlahgrandvaldiskon + (jumlahgrandvaldiskon * ppngrand) / 100;
+
+    jumlahgrandvalppn =
+      jumlahgrandvalppn + ppnnominalgrand - diskonnominalgrand;
+
+    setGrandtotalsum(jumlahgrandvalppn);
+  };
+
+  //option
+  const optionmetodepay = [
+    { value: "Cash/Tunai", label: "Cash/Tunai" },
+    { value: "Kredit", label: "Kredit" },
+  ];
+
+  //bypass
+  const getclosingbulanan = async (periode: string, tanggal: string) => {
+    const dataclosingval = await closingbulanan(periode, tanggal);
+    setClosebulanan(dataclosingval);
+  };
+
+  const cekRpuch = async (ivnum: string) => {
+    const response = await getRpurchbyivnum(ivnum);
+    setDatarpurch(response);
+  };
+
+  const cekHutanglunas = async (ivnum: string) => {
+    const response = await getHutanglunasbyivnum(ivnum);
+    setDatahutanglunas(response);
+  };
+
+  const getCekRpurchbyivnumFun = async (ivnum: string) => {
+    const response = await getCekRpurchbyivnum(ivnum);
+    setCekPurch(response);
+  };
+
+  //bersih
+  const bersih = () => {
+    setDatabarang([]);
+    setNoInv("");
+    setKodeSupp("");
+    setNamaSupp("");
+    setKeteranganVal("");
+    setDiskongrand(0);
+    setPpngrand(0);
+    setPpnnominalgrand(0);
+    setDiskonnominalgrand(0);
+    setGrandtotal(0);
+    setGrandtotalsum(0);
+    setJumlahqty(0);
+    setJumlahrp(0);
+  };
+
+  //save
+  const saveData = async () => {
     setLoadSave(false);
-    if (nomorpo === "") {
-      createMessage("Error", "Nomor PO masih kosong", "error");
+    if (nomorinv == "") {
+      createMessage("Error", "Nomor Invoice masih kosong", "error");
       setLoadSave(true);
       return;
     }
 
-    if (kodesupp === "") {
-      createMessage("Error", "Supplier belum dipilih", "error");
+    if (kodesupp == "") {
+      createMessage("Error", "Supplier masih kosong", "error");
       setLoadSave(true);
       return;
     }
 
-    if (departemen === "" || departemen === null) {
-      createMessage("Error", "Departemen belum dipilih", "error");
+    if (metodepembayaranval == "Kredit" && kreditval <= 0) {
+      createMessage("Error", "Lama Kredit Belum Lengkap", "error");
       setLoadSave(true);
       return;
     }
 
-    if (gudang === "" || gudang === null) {
+    if (gudang == null) {
       createMessage("Error", "Gudang belum dipilih", "error");
       setLoadSave(true);
       return;
@@ -411,6 +369,13 @@ export const Tambahorderbarang = (props: any) => {
 
     if (databarang.length < 1) {
       createMessage("Error", "Barang belum dipilih", "error");
+      setLoadSave(true);
+      return;
+    }
+
+    getclosingbulanan("stock_periode", tanggaldaily);
+    if (closebulanan[0]["status"] == false) {
+      createMessage("Error", closebulanan[0]["message"], "error");
       setLoadSave(true);
       return;
     }
@@ -423,78 +388,84 @@ export const Tambahorderbarang = (props: any) => {
       }
     });
 
-    // if (grandtotal < 1) {
-    //   createMessage(
-    //     "Error",
-    //     "Qty pada barang belum ada yang dimasukkan",
-    //     "error"
-    //   );
-    //   setLoadSave(true);
-    //   return;
-    // }
+    cekRpuch(nomorinv);
 
-    datastockpodetail(nomorpo);
-    datastockpurchdetail(nomorpo);
-    getdatapofun(nomorpo);
+    if (datarpurch.length > 0) {
+      createMessage("Error", "No.Invoice Ini Sudah Ada Proses Retur", "error");
+      setLoadSave(true);
+      return;
+    }
 
-    if (purchdetail.length > 0) {
+    cekHutanglunas(nomorinv);
+
+    if (datahutanglunas.length > 0) {
       createMessage(
         "Error",
-        "No. PO " + nomorpo + " Sudah Ada Penerimaan Barang",
+        "No.Invoice Ini Sudah diLakukan Pelunasan",
         "error"
       );
       setLoadSave(true);
       return;
     }
 
-    if (stockpodetail.length > 0) {
-      createMessage(
-        "Error",
-        "No. PO " + nomorpo + " Sudah diLakukan Closing PO",
-        "error"
-      );
-      setLoadSave(true);
-      return;
-    }
+    getCekRpurchbyivnumFun(nomorinv);
 
-    if (datapo.length > 0) {
-      getclosingbulanan("stock_periode", datapo[0]["Tgl"]);
+    if (cekpurch.length > 0) {
+      getclosingbulanan("stock_periode", cekpurch[0]["Tgl"]);
       if (closebulanan[0]["status"] == false) {
         createMessage("Error", closebulanan[0]["message"], "error");
         setLoadSave(true);
         return;
       }
+
+      if (gudang != cekpurch[0]["Gudang"]) {
+        createMessage(
+          "Error",
+          "No. Invoice ( " +
+            nomorinv +
+            " ) sudah pernah di Input dgn Gudang : " +
+            cekpurch[0]["Gudang"],
+          "error"
+        );
+        setLoadSave(true);
+        return;
+      }
     }
 
-    deletepofunc(nomorpo);
-    deletepodetailfunc(nomorpo);
+    await deletePurch(nomorinv);
+    await deleteDetailPurch(nomorinv);
 
-    const responsepo = await insertpo(
-      nomorpo,
+    const responsepurch = await insertpurch(
+      nomorinv,
       tanggaldaily.toString(),
       kodesupp,
-      0,
-      gudang == null ? "" : gudang,
+      kreditval,
+      diskonnominalgrand,
+      ppnnominalgrand,
       diskongrand,
       ppngrand,
-      ppnnominalgrand,
-      diskonnominalgrand,
       keteranganval,
       getCurrentDateInput(new Date()).toString(),
       "Admin"
     );
 
-    const responsepodetail = await insertpodetail(
+    const responsepurchdetail = await insertpurchdetail(
       databarang,
-      departemen == null ? "" : departemen,
-      nomorpo
+      gudang == null ? "" : gudang,
+      nomorinv
     );
 
+    await updatebatchproduct(databarang);
+
     if (
-      responsepo["message"] == "success" &&
-      responsepodetail["message"] == "success"
+      responsepurch["message"] == "success" &&
+      responsepurchdetail["message"] == "success"
     ) {
-      createMessage("Success", "Po berhasil disimpan", "success").then(() => {
+      createMessage(
+        "Success",
+        "Penerimaan barang berhasil disimpan",
+        "success"
+      ).then(() => {
         bersih();
         handleCloseModal();
       });
@@ -506,23 +477,75 @@ export const Tambahorderbarang = (props: any) => {
         "error"
       ).then(() => {
         if (props["onData"] == "") {
-          deletepofunc(nomorpo);
-          deletepodetailfunc(nomorpo);
+          deletePurch(nomorinv);
+          deleteDetailPurch(nomorinv);
         }
       });
       setLoadSave(true);
     }
   };
 
-  useEffect(() => {
+  const handleOnData = async () => {
+    bersih();
+    const datastockpurchdetail = await getPurchdetailbyivnum(props["onData"]);
+    const datastockpurch = await getPurchbyivnum(props["onData"]);
+
+    setNoInv(props["onData"]);
+    setKodeSupp(datastockpurch[0]["sNo_Acc"]);
+    setNamaSupp(datastockpurch[0]["Nama"]);
+    setGudang(datastockpurchdetail[0]["Gudang"]);
+    setTanggalDaily(getCurrentDateInput(new Date(datastockpurch[0]["Tgl"])));
+    setDiskongrand(datastockpurch[0]["Disc"]);
+    setPpngrand(datastockpurch[0]["PPn"]);
+    setDiskonnominalgrand(datastockpurch[0]["NominalDisc"]);
+    setPpnnominalgrand(datastockpurch[0]["NominalPPn"]);
+    setKeteranganVal(datastockpurch[0]["Keterangan"]);
+    let databarangarr: SetStateAction<any[]> = [];
+    datastockpurchdetail?.map((item: any) => {
+      let total = 0;
+      if (parseFloat(item["Disc"]) > 0) {
+        total =
+          parseFloat(item["Qtty"]) * parseFloat(item["hBeliEnd"]) -
+          (parseFloat(item["Qtty"]) *
+            parseFloat(item["hBeliEnd"]) *
+            parseFloat(item["Disc"])) /
+            100;
+      } else {
+        total = parseFloat(item["Qtty"]) * parseFloat(item["hBeliEnd"]);
+      }
+
+      databarangarr.push({
+        kodebarang: item["Kode"],
+        namabarang: item["Nama"],
+        qtybarang: item["Qtty"],
+        satuanbarang: item["Satuan"],
+        hargabeliend: item["hBeliEnd"],
+        diskonbarang: item["Disc"],
+        jumlahbarang: total,
+        nomorpesanan: item["NoPo"],
+        alokasi: item["Alokasi"],
+      });
+    });
+
+    setDatabarang(databarangarr);
+
     updateSummary();
     updateGrandtotal();
-    datastockpurchdetail("*");
-    datastockpodetail("*");
-    getdatapofun("*");
-    getpodetailnonlyfunc("*");
+    // console.log(datastockpurch);
+    // console.log(datastockpurchdetail);
+  };
+
+  useEffect(() => {
+    handlePembayaran();
+    updateSummary();
+    updateGrandtotal();
     getclosingbulanan("stock_periode", tanggaldaily);
+    cekRpuch("*");
+    cekHutanglunas("*");
+    getCekRpurchbyivnumFun("*");
   }, [
+    metodepembayaranval,
+    kredit,
     databarang,
     diskongrand,
     ppngrand,
@@ -548,7 +571,7 @@ export const Tambahorderbarang = (props: any) => {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Order Barang
+            Penerimaan Barang
           </Modal.Title>
         </Modal.Header>
 
@@ -589,15 +612,15 @@ export const Tambahorderbarang = (props: any) => {
               controlId="formHorizontalnopo"
             >
               <Form.Label column sm={2}>
-                Nomor PO <span className="text-danger">*)</span>
+                Nomor Invoice <span className="text-danger">*)</span>
               </Form.Label>
               <Col sm={10}>
                 <Form.Control
                   type="text"
-                  placeholder="Nomor PO"
-                  value={props["onData"] == "" ? nomorpo : props["onData"]}
+                  placeholder="Nomor Invoice"
+                  value={props["onData"] == "" ? nomorinv : props["onData"]}
                   onChange={(e) => {
-                    setNomorpo(e.target.value);
+                    setNoInv(e.target.value);
                   }}
                   readOnly={props["onData"] == "" ? false : true}
                 />
@@ -635,11 +658,33 @@ export const Tambahorderbarang = (props: any) => {
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formGridCity">
                 <Form.Label>
-                  Departemen <span className="text-danger">*)</span>
+                  Metode Pembayaran <span className="text-danger">*)</span>
                 </Form.Label>
-                <Optiondepartemen
-                  state={departemen}
-                  onChange={handleDepartemen}
+                <Select
+                  defaultValue={metodepembayaranval}
+                  placeholder={"Cash/Tunai"}
+                  onChange={(e: any) => {
+                    setMetodepembayaranval(e.value);
+                    handlePembayaran();
+                  }}
+                  options={optionmetodepay}
+                  value={optionmetodepay.filter(function (option: any) {
+                    return option.value === metodepembayaranval;
+                  })}
+                />
+              </Form.Group>
+
+              <Form.Group as={Col} controlId="formGridCity" className={kredit}>
+                <Form.Label>
+                  Lama Kredit <span className="text-danger">*)</span>
+                </Form.Label>
+                <Form.Control
+                  type="number"
+                  value={kreditval}
+                  min={0}
+                  onChange={(e) => {
+                    setKreditval(parseFloat(e.target.value));
+                  }}
                 />
               </Form.Group>
 
@@ -663,10 +708,11 @@ export const Tambahorderbarang = (props: any) => {
             <Table responsive striped bordered>
               <thead>
                 <tr>
-                  <th></th>
+                  <th>#</th>
                   <th>Kode Barang</th>
                   <th>Description</th>
-                  <th>No. Pesanan</th>
+                  <th>Lokasi</th>
+                  <th>No. Po</th>
                   <th>Alokasi</th>
                   <th>Qtty</th>
                   <th>Satuan</th>
@@ -678,7 +724,7 @@ export const Tambahorderbarang = (props: any) => {
               <tbody>
                 {databarang?.length < 1 ? (
                   <tr>
-                    <td colSpan={10} align="center">
+                    <td colSpan={11} align="center">
                       {props["onData"] == "" ? (
                         <span>Belum ada data barang</span>
                       ) : (
@@ -697,6 +743,7 @@ export const Tambahorderbarang = (props: any) => {
                   databarang?.map((item, i) => {
                     return (
                       <tr key={i}>
+                        {/* Hapus */}
                         <td>
                           <FaTrash
                             className="text-danger"
@@ -718,63 +765,77 @@ export const Tambahorderbarang = (props: any) => {
                         </td>
                         <td>{item["kodebarang"]}</td>
                         <td>{item["namabarang"]}</td>
+                        <td></td>
+                        {/* nomor po */}
                         <td>
                           <Form.Control
                             type="text"
                             value={item["nomorpesanan"]}
-                            onChange={(e) => {
-                              updatenopesanan(
-                                item["kodebarang"],
-                                e.target.value
-                              );
-                            }}
-                            onFocus={(e) => e.target.select()}
                             onClick={() => {
-                              handleShowPesanan(item["kodebarang"]);
+                              handleShowItemPO(item["kodebarang"]);
                             }}
+                            onChange={(e) => console.log(e.target.value)}
+                            onFocus={(e) => e.target.select()}
+                            readOnly={true}
                           />
                         </td>
+                        {/* Alokasi */}
                         <td>
                           <Form.Control
                             type="text"
                             value={item["alokasi"]}
                             onChange={(e) => {
-                              updatealokasi(item["kodebarang"], e.target.value);
-                            }}
-                            onFocus={(e) => e.target.select()}
-                          />
-                        </td>
-                        <td>
-                          <Form.Control
-                            type="number"
-                            value={item["qtybarang"]}
-                            min={0}
-                            onChange={(e) => {
-                              updateJumlahbyqty(
+                              handleUpdateAlokasi(
                                 item["kodebarang"],
-                                parseFloat(e.target.value),
-                                parseFloat(item["hargabeliend"])
+                                e.target.value
                               );
                             }}
                             onFocus={(e) => e.target.select()}
                           />
                         </td>
-                        <td>{item["satuanbarang"]}</td>
-                        <td>
-                          <Form.Control
-                            type="text"
-                            value={parseFloat(item["hargabeliend"])}
-                            onChange={(e) => e.target.value}
-                          />
-                        </td>
+                        {/* Qtty */}
                         <td>
                           <Form.Control
                             type="number"
-                            value={item["diskonbarang"]}
+                            min={0}
+                            value={item["qtybarang"]}
+                            onChange={(e) => {
+                              handleQty(
+                                item["kodebarang"],
+                                parseFloat(e.target.value),
+                                item["hargabeliend"]
+                              );
+                            }}
+                            onFocus={(e) => e.target.select()}
+                          />
+                        </td>
+                        {/* Satuan */}
+                        <td>{item["satuanbarang"]}</td>
+                        {/* harga barang */}
+                        <td>
+                          <Form.Control
+                            type="number"
+                            min={0}
+                            value={item["hargabeliend"]}
+                            onChange={(e) => {
+                              handleHarga(
+                                item["kodebarang"],
+                                parseFloat(e.target.value)
+                              );
+                            }}
+                            onFocus={(e) => e.target.select()}
+                          />
+                        </td>
+                        {/* Diskon */}
+                        <td>
+                          {" "}
+                          <Form.Control
+                            type="number"
                             min={0}
                             max={100}
+                            value={item["diskonbarang"]}
                             onChange={(e) =>
-                              updateJumlahbydiskon(
+                              handleDiskon(
                                 item["kodebarang"],
                                 parseFloat(item["qtybarang"]),
                                 parseFloat(e.target.value),
@@ -784,11 +845,18 @@ export const Tambahorderbarang = (props: any) => {
                             onFocus={(e) => e.target.select()}
                           />
                         </td>
+                        {/* Jumlah */}
                         <td>
+                          {" "}
                           <Form.Control
-                            type="text"
-                            value={parseFloat(item["jumlahbarang"])}
-                            onChange={(e) => e.target.value}
+                            type="number"
+                            min={0}
+                            value={item["jumlahbarang"]}
+                            onChange={(e) => {
+                              console.log(e.target.value);
+                            }}
+                            onFocus={(e) => e.target.select()}
+                            readOnly={true}
                           />
                         </td>
                       </tr>
@@ -798,7 +866,7 @@ export const Tambahorderbarang = (props: any) => {
               </tbody>
               <tfoot>
                 <tr>
-                  <th colSpan={5}></th>
+                  <th colSpan={6}></th>
                   <th>{jumlahqty}</th>
                   <th colSpan={3}></th>
                   <th>{jumlahrp}</th>
@@ -959,7 +1027,7 @@ export const Tambahorderbarang = (props: any) => {
           <Button
             variant="primary"
             onClick={() => {
-              simpanPO();
+              saveData();
             }}
           >
             <Spinner
@@ -970,7 +1038,7 @@ export const Tambahorderbarang = (props: any) => {
               aria-hidden="true"
               hidden={loadSave}
             />{" "}
-            <FaRegSave /> Simpan Order Barang
+            <FaRegSave /> Simpan Penerimaan Barang
           </Button>
         </Modal.Footer>
       </Modal>
@@ -1017,8 +1085,8 @@ export const Tambahorderbarang = (props: any) => {
       <Modal
         size="lg"
         animation={false}
-        show={showpesanan}
-        onHide={handleClosePesanan}
+        show={showitempo}
+        onHide={handleCloseItemPo}
         backdrop="static"
         keyboard={false}
         aria-labelledby="contained-modal-title-vcenter"
@@ -1030,7 +1098,10 @@ export const Tambahorderbarang = (props: any) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Viewdatapesanandetail onClick={handlePesananBarang} />
+          <Viewdataitemorderbarang
+            onClick={handleSetItemPo}
+            datakodebarang={kodebarang}
+          />
         </Modal.Body>
       </Modal>
     </div>
