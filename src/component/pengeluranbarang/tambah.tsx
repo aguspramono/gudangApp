@@ -19,6 +19,8 @@ import { Optionstatus } from "./../global/optionstatus";
 import { Viewdataproduk } from "./../global/databarang";
 import { closingbulanan } from "./../../function/Closingbulanan";
 
+import { insertStockOut } from "./../../function/Pengeluaranbarang";
+
 import { createMessage } from "./../../function/Alert";
 
 export const Tambahpengeluaranbarang = (props: any) => {
@@ -143,18 +145,14 @@ export const Tambahpengeluaranbarang = (props: any) => {
 
   //simpan pesanan barang
   const simpanPengeluaranbarang = async () => {
-    console.log(invcheck);
-
-    if (invcheck == false) {
-      if (nomorivoice == "") {
-        createMessage(
-          "Error",
-          "Nomor Invoice masih kosong, ceklis pada Auto number jika ingin invoice terisi otomatis",
-          "error"
-        );
-        setLoadSave(true);
-        return;
-      }
+    if (nomorivoice == "") {
+      createMessage(
+        "Error",
+        "Nomor Invoice masih kosong, harap isi nomor invoice",
+        "error"
+      );
+      setLoadSave(true);
+      return;
     }
 
     if (gudang === "" || gudang == null) {
@@ -186,142 +184,40 @@ export const Tambahpengeluaranbarang = (props: any) => {
       setLoadSave(true);
       return;
     }
+
+    getclosingbulanan("stock_periode", tanggaldaily);
+    if (closebulanan[0]["status"] == false) {
+      createMessage("Error", closebulanan[0]["message"], "error");
+      setLoadSave(true);
+      return;
+    }
+
+    const simpanpengeluaran = await insertStockOut(
+      databarang,
+      gudang,
+      tanggaldaily,
+      nomorivoice,
+      departemen,
+      keteranganval,
+      status,
+      kegudang,
+      getCurrentDateInput(new Date()).toString(),
+      "Admin"
+    );
+
+    if (simpanpengeluaran["status"] == "success") {
+      createMessage("Success", "Berhasil disimpan", "success").then(() => {
+        bersih();
+        handleCloseModal();
+      });
+      setLoadSave(true);
+    } else {
+      createMessage("Error", simpanpengeluaran["message"], "error").then(
+        () => {}
+      );
+      setLoadSave(true);
+    }
   };
-  //   const simpanPesananbarang = async () => {
-  //     setLoadSave(false);
-  //     if (nomorpesanan === "") {
-  //       createMessage("Error", "Nomor Pesanan masih kosong", "error");
-  //       setLoadSave(true);
-  //       return;
-  //     }
-
-  //     if (departemen === "") {
-  //       createMessage("Error", "Departemen belum dipilih", "error");
-  //       setLoadSave(true);
-  //       return;
-  //     }
-
-  //     if (gudang === "") {
-  //       createMessage("Error", "Gudang belum dipilih", "error");
-  //       setLoadSave(true);
-  //       return;
-  //     }
-
-  //     getclosingbulanan("stock_periode", tanggaldaily);
-  //     if (closebulanan[0]["status"] == false) {
-  //       createMessage("Error", closebulanan[0]["message"], "error");
-  //       setLoadSave(true);
-  //       return;
-  //     }
-
-  //     if (databarang.length < 1) {
-  //       createMessage("Error", "Barang belum dipilih", "error");
-  //       setLoadSave(true);
-  //       return;
-  //     }
-
-  //     databarang.map((item) => {
-  //       if (item["qtybarang"] == "0") {
-  //         createMessage("Error", "Qty barang ada yang belum diisi", "error");
-  //         setLoadSave(true);
-  //         return;
-  //       }
-  //     });
-
-  //     getdetailpo(nomorpesanan);
-
-  //     if (datadetailpo.length > 0) {
-  //       createMessage(
-  //         "Error",
-  //         "No. Pesanan " +
-  //           nomorpesanan +
-  //           " Sudah Ada PO Barang, Proses Edit diBatalkan?",
-  //         "error"
-  //       );
-  //       setLoadSave(true);
-  //       return;
-  //     }
-
-  //     getdetailpesanan(nomorpesanan);
-  //     if (datadetailpesanan.length > 0) {
-  //       createMessage(
-  //         "Error",
-  //         "No. Pesanan " +
-  //           nomorpesanan +
-  //           " Sudah diLakukan Closing Pesanan, Proses Edit diBatalkan?",
-  //         "error"
-  //       );
-  //       setLoadSave(true);
-  //       return;
-  //     }
-
-  //     getdetailpesananid(nomorpesanan);
-
-  //     if (datadetailpesananid.length > 0) {
-  //       getclosingbulanan("stock_periode", datadetailpesananid[0]["Tgl"]);
-  //       if (closebulanan[0]["status"] == false) {
-  //         createMessage("Error", closebulanan[0]["message"], "error");
-  //         setLoadSave(true);
-  //         return;
-  //       }
-
-  //       if (datadetailpesananid[0]["Gudang"] != gudang) {
-  //         createMessage(
-  //           "Error",
-  //           "No. Invoice " +
-  //             nomorpesanan +
-  //             " sudah pernah di Input dgn Gudang " +
-  //             datadetailpesananid[0]["Gudang"],
-  //           "error"
-  //         );
-  //         setLoadSave(true);
-  //         return;
-  //       }
-  //     }
-
-  //     deletepesananfunc(nomorpesanan);
-  //     deletepesanandetailfunc(nomorpesanan);
-
-  //     const savepesanan = await insertpesanan(
-  //       nomorpesanan,
-  //       tanggaldaily.toString(),
-  //       gudang == null ? "" : gudang,
-  //       keteranganval,
-  //       getCurrentDateInput(new Date()).toString(),
-  //       "Admin"
-  //     );
-
-  //     const savepesanandetail = await insertpesanandetail(
-  //       databarang,
-  //       departemen == null ? "" : departemen,
-  //       nomorpesanan
-  //     );
-
-  //     if (
-  //       savepesanan["message"] == "success" &&
-  //       savepesanandetail["message"] == "success"
-  //     ) {
-  //       createMessage("Success", "Pesanan berhasil disimpan", "success").then(
-  //         () => {
-  //           bersih();
-  //           handleCloseModal();
-  //         }
-  //       );
-  //       setLoadSave(true);
-  //     } else {
-  //       createMessage(
-  //         "Error",
-  //         "Terjadi kesalahan, proses simpan tidak dilanjutkan",
-  //         "error"
-  //       ).then(() => {
-  //         if (props["onData"] == "") {
-  //           deletepesananfunc(nomorpesanan);
-  //           deletepesanandetailfunc(nomorpesanan);
-  //         }
-  //       });
-  //       setLoadSave(true);
-  //     }
-  //   };
 
   //   const handleOnData = async () => {
   //     bersih();
@@ -426,13 +322,6 @@ export const Tambahpengeluaranbarang = (props: any) => {
                     setNomorinvoice(e.target.value);
                   }}
                   readOnly={props["onData"] == "" ? false : true}
-                />
-
-                <Form.Check
-                  type={"checkbox"}
-                  id={`default-checkbox`}
-                  label={`Auto Number (Nomor Invoice)`}
-                  onChange={() => setInvcheck(!invcheck)}
                 />
               </Col>
             </Form.Group>

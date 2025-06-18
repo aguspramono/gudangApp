@@ -30,4 +30,28 @@ export const getStockOutCount = async (wherelike:string,option:string,filter:str
     } catch (error) {
       return error;
     }
-};
+}; 
+
+export const insertStockOut = async(mydata:any,gudang:string,tanggal:string,invoice:string,departemen:string,keterangan:string,status:string,keGudang:string,TglUbah:string,Username:string)=>{
+  try {
+    var postData = {
+      data:mydata,
+      gudang:gudang,
+      tanggal:tanggal,
+      invoice:invoice,
+      departemen:departemen,
+      keterangan:keterangan,
+      status:status,
+      keGudang:keGudang,
+      TglUbah:TglUbah,
+      Username:Username
+    };
+
+    const response = await axios.post(
+      `${baseUrl}stockout/save`,postData, {headers:headers});
+
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+}
